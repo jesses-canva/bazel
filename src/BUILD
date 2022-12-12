@@ -595,3 +595,8 @@ filegroup(
         for version in ("17", "18")
     ],
 )
+
+exports_files(
+    ["darwin_universal_binary.bzl"],
+    visibility = ["//third_party/ijar:__pkg__"],
+)
