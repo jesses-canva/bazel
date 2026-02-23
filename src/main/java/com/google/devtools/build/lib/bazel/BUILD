@@ -218,6 +218,7 @@ java_binary(
         "//src/main/java/com/google/devtools/build/lib/server",
         "//src/main/java/com/google/devtools/build/lib/util:simple_log_handler",  # See startup_options.cc
         "//src/main/java/com/google/devtools/build/lib/util:single_line_formatter",  # See startup_options.cc
+        "//src/main/java/net/starlark/java/eval/truffle",  # Truffle-based Starlark interpreter
     ],
 )
 

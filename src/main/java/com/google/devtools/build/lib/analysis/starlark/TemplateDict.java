@@ -67,8 +67,9 @@ public class TemplateDict implements TemplateDictApi {
       Boolean allowClosure,
       StarlarkThread thread)
       throws EvalException {
-    if (mapEach instanceof StarlarkFunction sfn) {
-      if (!allowClosure && sfn.getModule().getGlobal(sfn.getName()) != sfn) {
+    if (Starlark.isStarlarkDefinedFunction(mapEach)) {
+      StarlarkFunction sfn = Starlark.asStarlarkFunction(mapEach);
+      if (!allowClosure && !sfn.isGlobal()) {
         throw Starlark.errorf(
             "to avoid unintended retention of analysis data structures, "
                 + "the map_each function (declared at %s) must be declared "

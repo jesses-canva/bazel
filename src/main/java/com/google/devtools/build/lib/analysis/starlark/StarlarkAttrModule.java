@@ -325,7 +325,7 @@ public final class StarlarkAttrModule implements StarlarkAttrModuleApi {
             && arguments.get(CONFIGURABLE_ARG) != Starlark.UNBOUND;
 
     if (!Starlark.isNullOrNone(materializer)) {
-      if (!(materializer instanceof StarlarkFunction)) {
+      if (!Starlark.isStarlarkDefinedFunction(materializer)) {
         throw Starlark.errorf(
             "Expected a function in 'materializer' parameter, got '%s'",
             Starlark.type(materializer));
@@ -351,13 +351,15 @@ public final class StarlarkAttrModule implements StarlarkAttrModuleApi {
       // This method doesn't have a type parameter so we can't supply one to
       // MaterializingDefault, either.
       StarlarkMaterializer starlarkMaterializer =
-          new StarlarkMaterializer(type, thread.getSemantics(), (StarlarkFunction) materializer);
+          new StarlarkMaterializer(
+              type, thread.getSemantics(), Starlark.asStarlarkFunction(materializer));
       builder.value(new MaterializingDefault(type, ImmutableMap.class, starlarkMaterializer));
     } else if (!Starlark.isNullOrNone(defaultValue)) {
-      if (defaultValue instanceof StarlarkFunction) {
+      if (Starlark.isStarlarkDefinedFunction(defaultValue)) {
         // Computed attribute. Non label type attributes already caused a type check error.
         StarlarkCallbackHelper callback =
-            new StarlarkCallbackHelper((StarlarkFunction) defaultValue, thread.getSemantics());
+            new StarlarkCallbackHelper(
+                Starlark.asStarlarkFunction(defaultValue), thread.getSemantics());
         // StarlarkComputedDefaultTemplate needs to know the names of all attributes that it depends
         // on. However, this method does not know anything about other attributes.
         // We solve this problem by asking the StarlarkCallbackHelper for the parameter names used

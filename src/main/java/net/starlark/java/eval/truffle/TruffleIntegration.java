@@ -1,0 +1,128 @@
+// Copyright 2024 The Bazel Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+package net.starlark.java.eval.truffle;
+
+import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.frame.FrameDescriptor;
+import net.starlark.java.eval.EvalException;
+import net.starlark.java.eval.Module;
+import net.starlark.java.eval.Starlark;
+import net.starlark.java.eval.StarlarkFunction;
+import net.starlark.java.eval.StarlarkThread;
+import net.starlark.java.eval.Tuple;
+import net.starlark.java.eval.truffle.nodes.StarlarkModuleRootNode;
+import net.starlark.java.eval.truffle.runtime.FreezeAssumption;
+import net.starlark.java.eval.truffle.runtime.StarlarkTruffleFunction;
+import net.starlark.java.syntax.Program;
+import net.starlark.java.syntax.Resolver;
+
+/**
+ * Entry point for the Truffle-based Starlark interpreter.
+ *
+ * <p>This class is called from {@link Starlark#execFileProgram} when the USE_TRUFFLE_INTERPRETER
+ * flag is enabled. It translates the resolved AST to Truffle nodes and executes them.
+ */
+public final class TruffleIntegration {
+
+  private TruffleIntegration() {} // uninstantiable
+
+  /**
+   * Executes a compiled Starlark program using the Truffle interpreter.
+   *
+   * @param prog the compiled program
+   * @param module the module environment
+   * @param thread the Starlark thread for execution context
+   * @return the result of executing the program (None unless the file's final statement is an
+   *     expression)
+   */
+  public static Object execFileProgram(Program prog, Module module, StarlarkThread thread)
+      throws EvalException, InterruptedException {
+    Resolver.Function rfn = prog.getResolvedFunction();
+
+    int[] globalIndex =
+        net.starlark.java.eval.StarlarkTruffleAccessor.getIndicesOfGlobals(
+            module, rfn.getGlobals());
+
+    if (module.getDocumentation() == null) {
+      String documentation = rfn.getDocumentation();
+      if (documentation != null) {
+        module.setDocumentation(Starlark.trimDocString(documentation));
+      }
+    }
+
+    // Register a FreezeAssumption on the thread's mutability so that when the thread is frozen,
+    // any JIT-compiled Truffle code that assumed mutability will deoptimize.
+    if (!thread.mutability().isFrozen()) {
+      FreezeAssumption.forMutability(thread.mutability());
+    }
+
+    // Translate the resolved AST to a Truffle node tree.
+    SyntaxToTruffleTranslator translator =
+        new SyntaxToTruffleTranslator(module, globalIndex, thread);
+    FrameDescriptor frameDescriptor = translator.buildFrameDescriptor(rfn);
+
+    StarlarkModuleRootNode rootNode =
+        translator.translateModule(rfn, frameDescriptor, module, globalIndex, thread);
+
+    CallTarget callTarget = rootNode.getCallTarget();
+
+    // Create a synthetic StarlarkTruffleFunction to serve as args[0] in the unified
+    // calling convention: args[0]=callee, args[1]=thread.
+    // Module-level nodes (ReadGlobalNode, WriteGlobalNode, ReadPredeclaredNode, etc.)
+    // access the module and globalIndex through this callee object.
+    StarlarkTruffleFunction syntheticCallee =
+        new StarlarkTruffleFunction(
+            rfn,
+            module,
+            globalIndex,
+            Tuple.empty(),
+            new StarlarkFunction.Cell[0],
+            callTarget,
+            thread.getNextIdentityToken());
+
+    // Push the synthetic callee onto the call stack so that Bazel's framework can find
+    // the enclosing module (via Module.ofInnermostEnclosingStarlarkFunction).
+    net.starlark.java.eval.StarlarkTruffleAccessor.pushCallStack(thread, syntheticCallee);
+
+    // Execute the Truffle AST.
+    // CallTarget.call() wraps exceptions in RuntimeException, so we unwrap them here.
+    try {
+      return callTarget.call(syntheticCallee, thread);
+    } catch (RuntimeException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof EvalException) {
+        throw (EvalException) cause;
+      }
+      if (cause instanceof InterruptedException) {
+        throw (InterruptedException) cause;
+      }
+      // Include the root cause details and stack trace for debugging.
+      Throwable root = e;
+      while (root.getCause() != null) {
+        root = root.getCause();
+      }
+      StringBuilder detail = new StringBuilder();
+      detail.append(root.getClass().getSimpleName()).append(": ").append(root.getMessage());
+      for (StackTraceElement ste : root.getStackTrace()) {
+        if (ste.getClassName().startsWith("com.google.devtools")
+            || ste.getClassName().startsWith("net.starlark")) {
+          detail.append("\n  at ").append(ste);
+        }
+      }
+      throw new EvalException("Truffle execution error: " + detail, e);
+    } finally {
+      net.starlark.java.eval.StarlarkTruffleAccessor.popCallStack(thread);
+    }
+  }
+}

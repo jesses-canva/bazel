@@ -89,7 +89,16 @@ public final class StarlarkFunction implements StarlarkCallable {
 
   /** Whether this function is defined at the top level of a file. */
   public boolean isGlobal() {
-    return module.getGlobal(getName()) == this;
+    Object global = module.getGlobal(getName());
+    if (global == this) {
+      return true;
+    }
+    // When the Truffle interpreter is active, this StarlarkFunction may be a wrapper created by
+    // toStarlarkFunction(), while the global is the original StarlarkTruffleFunction.
+    if (global instanceof StarlarkCallable callable && callable.toStarlarkFunction() == this) {
+      return true;
+    }
+    return false;
   }
 
   @Override
@@ -182,6 +191,11 @@ public final class StarlarkFunction implements StarlarkCallable {
     return rfn.getName();
   }
 
+  @Override
+  public Resolver.Function getResolvedFunction() {
+    return rfn;
+  }
+
   /**
    * Returns the value denoted by the function's doc string literal (trimmed if necessary), or null
    * if absent.
@@ -192,6 +206,7 @@ public final class StarlarkFunction implements StarlarkCallable {
     return documentation != null ? Starlark.trimDocString(documentation) : null;
   }
 
+  @Override
   public Module getModule() {
     return module;
   }
@@ -205,7 +220,7 @@ public final class StarlarkFunction implements StarlarkCallable {
     return (Cell) freevars.get(index);
   }
 
-  void export(StarlarkThread thread, String name) {
+  public void export(StarlarkThread thread, String name) {
     // Checks that thread is the one that defines the StarlarkFunction. It's possible for one
     // StarlarkFunction to be exported in different places.
     if (!token.getOwner().equals(thread.getOwner())) {
@@ -277,18 +292,18 @@ public final class StarlarkFunction implements StarlarkCallable {
 
   // The MANDATORY sentinel indicates a slot in the defaultValues
   // tuple corresponding to a required parameter.
-  // It is not visible to Java or Starlark code.
-  static final Object MANDATORY = new Mandatory();
+  // It is not visible to Starlark code, but is accessible to the Truffle interpreter.
+  public static final Object MANDATORY = new Mandatory();
 
   private static class Mandatory implements StarlarkValue {}
 
   // A Cell is a local variable shared between an inner and an outer function.
-  // It is a StarlarkValue because it is a stack operand and a Tuple element,
-  // but it is not visible to Java or Starlark code.
-  static final class Cell implements StarlarkValue {
-    Object x;
+  // It is a StarlarkValue because it is a stack operand and a Tuple element.
+  // It is not visible to Starlark code, but is accessible to the Truffle interpreter.
+  public static final class Cell implements StarlarkValue {
+    public Object x;
 
-    Cell(Object x) {
+    public Cell(Object x) {
       this.x = x;
     }
   }

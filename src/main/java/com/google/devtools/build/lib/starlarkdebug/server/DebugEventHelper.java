@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.starlark.java.eval.Debug;
+import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkFunction;
 import net.starlark.java.syntax.Location;
 
@@ -143,8 +144,8 @@ final class DebugEventHelper {
 
   private static ImmutableList<Scope> getScopes(ThreadObjectMap objectMap, Debug.Frame frame) {
     Map<String, Object> moduleVars =
-        frame.getFunction() instanceof StarlarkFunction
-            ? ((StarlarkFunction) frame.getFunction()).getModule().getGlobals()
+        Starlark.isStarlarkDefinedFunction(frame.getFunction())
+            ? Starlark.asStarlarkFunction(frame.getFunction()).getModule().getGlobals()
             : ImmutableMap.of();
 
     ImmutableMap<String, Object> localVars = frame.getLocals();

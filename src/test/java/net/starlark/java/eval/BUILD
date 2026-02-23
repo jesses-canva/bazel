@@ -10,6 +10,9 @@ filegroup(
 )
 
 # EvalTests test the Starlark interpreter.
+# These JUnit tests exercise internal APIs (StarlarkFunction casts, debug hooks, stack traces)
+# that are specific to the tree-walking interpreter. Without Truffle on the classpath, the
+# isTruffleAvailable() check in Starlark.java causes graceful fallback to tree-walking.
 java_test(
     name = "EvalTests",
     srcs = [
@@ -68,11 +71,15 @@ java_library(
     ],
 )
 
+# Script-based tests using the Truffle-based interpreter (the default).
 java_test(
     name = "ScriptTest",
     main_class = "net.starlark.java.eval.ScriptTest",
     use_testrunner = False,
-    runtime_deps = [":ScriptTest_lib"],
+    runtime_deps = [
+        ":ScriptTest_lib",
+        "//src/main/java/net/starlark/java/eval/truffle",
+    ],
 )
 
 java_test(
@@ -80,15 +87,79 @@ java_test(
     jvm_flags = ["-Dnet.starlark.java.eval.ScriptTest.utf8ByteStrings=true"],
     main_class = "net.starlark.java.eval.ScriptTest",
     use_testrunner = False,
+    runtime_deps = [
+        ":ScriptTest_lib",
+        "//src/main/java/net/starlark/java/eval/truffle",
+    ],
+)
+
+# Script-based tests explicitly using the Truffle-based interpreter.
+# Kept for backward compatibility; equivalent to ScriptTest with the new default.
+java_test(
+    name = "ScriptTest_Truffle",
+    jvm_flags = ["-Dnet.starlark.java.eval.ScriptTest.useTruffleInterpreter=true"],
+    main_class = "net.starlark.java.eval.ScriptTest",
+    use_testrunner = False,
+    runtime_deps = [
+        ":ScriptTest_lib",
+        "//src/main/java/net/starlark/java/eval/truffle",
+    ],
+)
+
+# Script-based tests explicitly using the tree-walking interpreter.
+java_test(
+    name = "ScriptTest_TreeWalking",
+    jvm_flags = ["-Dnet.starlark.java.eval.ScriptTest.useTruffleInterpreter=false"],
+    main_class = "net.starlark.java.eval.ScriptTest",
+    use_testrunner = False,
     runtime_deps = [":ScriptTest_lib"],
 )
 
 # Script-based benchmarks of the Starlark interpreter.
+# Uses Truffle by default (with Truffle on the classpath).
 java_binary(
     name = "Benchmarks",
-    srcs = ["Benchmarks.java"],
     data = glob(["testdata/bench_*.star"]),
     jvm_flags = ["-Dfile.encoding=UTF8"],
+    main_class = "net.starlark.java.eval.Benchmarks",
+    runtime_deps = [
+        ":Benchmarks_lib",
+        "//src/main/java/net/starlark/java/eval/truffle",
+    ],
+)
+
+# Script-based benchmarks explicitly using the Truffle-based interpreter.
+# Kept for backward compatibility; equivalent to Benchmarks with the new default.
+java_binary(
+    name = "Benchmarks_Truffle",
+    data = glob(["testdata/bench_*.star"]),
+    jvm_flags = [
+        "-Dfile.encoding=UTF8",
+        "-Dnet.starlark.java.eval.Benchmarks.useTruffleInterpreter=true",
+    ],
+    main_class = "net.starlark.java.eval.Benchmarks",
+    runtime_deps = [
+        ":Benchmarks_lib",
+        "//src/main/java/net/starlark/java/eval/truffle",
+    ],
+)
+
+# Script-based benchmarks explicitly using the tree-walking interpreter.
+java_binary(
+    name = "Benchmarks_TreeWalking",
+    data = glob(["testdata/bench_*.star"]),
+    jvm_flags = [
+        "-Dfile.encoding=UTF8",
+        "-Dnet.starlark.java.eval.Benchmarks.useTruffleInterpreter=false",
+    ],
+    main_class = "net.starlark.java.eval.Benchmarks",
+    runtime_deps = [":Benchmarks_lib"],
+)
+
+java_library(
+    name = "Benchmarks_lib",
+    srcs = ["Benchmarks.java"],
+    data = glob(["testdata/bench_*.star"]),
     deps = [
         "//src/main/java/net/starlark/java/annot",
         "//src/main/java/net/starlark/java/eval",

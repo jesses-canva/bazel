@@ -244,7 +244,10 @@ public class StarlarkCustomCommandLine extends CommandLine {
       // instances (and possibly even across multiple Args.add_all calls), saving a slot in
       // arguments.
       StarlarkFunction mapEachGlobalFunction =
-          arg.mapEach instanceof StarlarkFunction sfn && sfn.isGlobal() ? sfn : null;
+          Starlark.isStarlarkDefinedFunction(arg.mapEach)
+                  && Starlark.asStarlarkFunction(arg.mapEach).isGlobal()
+              ? Starlark.asStarlarkFunction(arg.mapEach)
+              : null;
       arguments.add(
           VectorArg.create(
               features,
@@ -1183,8 +1186,8 @@ public class StarlarkCustomCommandLine extends CommandLine {
   }
 
   private static boolean wantsDirectoryExpander(StarlarkCallable mapFn) {
-    return mapFn instanceof StarlarkFunction starlarkFunction
-        && starlarkFunction.getParameterNames().size() >= 2;
+    return Starlark.isStarlarkDefinedFunction(mapFn)
+        && Starlark.asStarlarkFunction(mapFn).getParameterNames().size() >= 2;
   }
 
   private static class CommandLineItemMapEachAdaptor

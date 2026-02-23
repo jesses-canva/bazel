@@ -150,7 +150,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
 
       Object value = positional[argIndex++];
       checkParamValue(param, value);
-      vector[paramIndex] = value;
+      vector[paramIndex] = convertIfStarlarkFunctionExpected(param, value);
     }
 
     // *args
@@ -318,7 +318,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
       ParamDescriptor param = getNextEnabledPositionalParam();
       if (param != null) {
         checkParamValue(param, value);
-        vector[paramIndex++] = value;
+        vector[paramIndex++] = convertIfStarlarkFunctionExpected(param, value);
         argIndex++;
       } else if (varArgs != null) {
         varArgs.add(value);
@@ -383,6 +383,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
       }
 
       checkParamValue(param, value);
+      value = convertIfStarlarkFunctionExpected(param, value);
 
       // duplicate?
       if (vector[index] != null) {
@@ -403,6 +404,15 @@ public sealed class BuiltinFunction implements StarlarkCallable
       boolean ok = false;
       for (Class<?> cls : allowedClasses) {
         if (cls.isInstance(value)) {
+          ok = true;
+          break;
+        }
+        // The Truffle-based interpreter produces StarlarkTruffleFunction instead of
+        // StarlarkFunction. When a parameter expects StarlarkFunction, also accept any
+        // StarlarkCallable that is a Starlark-defined function (has a resolved function).
+        if (cls == StarlarkFunction.class
+            && value instanceof StarlarkCallable callable
+            && callable.getResolvedFunction() != null) {
           ok = true;
           break;
         }
@@ -515,12 +525,50 @@ public sealed class BuiltinFunction implements StarlarkCallable
         ok = true;
         break;
       }
+      // The Truffle-based interpreter produces StarlarkTruffleFunction instead of
+      // StarlarkFunction. When a parameter expects StarlarkFunction, also accept any
+      // StarlarkCallable that is a Starlark-defined function (has a resolved function).
+      if (cls == StarlarkFunction.class
+          && value instanceof StarlarkCallable callable
+          && callable.getResolvedFunction() != null) {
+        ok = true;
+        break;
+      }
     }
     if (!ok) {
       throw Starlark.errorf(
           "in call to %s(), parameter '%s' got value of type '%s', want '%s'",
           getName(), param.getName(), Starlark.type(value), param.getTypeErrorMessage());
     }
+  }
+
+  /**
+   * If the parameter expects a {@link StarlarkFunction} and the value is a {@link StarlarkCallable}
+   * that can be converted to one (e.g., a Truffle function), returns the converted value. Otherwise
+   * returns the original value unchanged. This bridges the Truffle interpreter's function type with
+   * Java API methods that declare {@code StarlarkFunction} parameter types.
+   */
+  private static Object convertIfStarlarkFunctionExpected(ParamDescriptor param, Object value) {
+    if (value instanceof StarlarkFunction) {
+      return value;
+    }
+    if (!(value instanceof StarlarkCallable callable)) {
+      return value;
+    }
+    List<Class<?>> allowedClasses = param.getAllowedClasses();
+    if (allowedClasses == null) {
+      return value;
+    }
+    for (Class<?> cls : allowedClasses) {
+      if (cls == StarlarkFunction.class) {
+        StarlarkFunction sf = callable.toStarlarkFunction();
+        if (sf != null) {
+          return sf;
+        }
+        break;
+      }
+    }
+    return value;
   }
 
   /**

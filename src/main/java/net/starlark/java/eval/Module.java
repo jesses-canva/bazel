@@ -119,11 +119,10 @@ public final class Module implements Resolver.Module {
    */
   @Nullable
   public static Module ofInnermostEnclosingStarlarkFunction(StarlarkThread thread, int depth) {
-    StarlarkFunction fn = thread.getInnermostEnclosingStarlarkFunction(depth);
-    if (fn != null) {
-      return fn.getModule();
-    }
-    return null;
+    // Use the unified search that finds the depth-th innermost callable with a module,
+    // regardless of whether it's a StarlarkFunction (tree-walking) or StarlarkTruffleFunction
+    // (Truffle). This correctly handles mixed call stacks where both types coexist.
+    return thread.getModuleOfInnermostEnclosingCallable(depth);
   }
 
   /**

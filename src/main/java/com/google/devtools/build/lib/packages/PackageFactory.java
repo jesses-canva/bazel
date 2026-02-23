@@ -697,7 +697,7 @@ public final class PackageFactory {
             Profiler.instance()
                 .completeTask(
                     startTimeNanos,
-                    fn instanceof StarlarkFunction
+                    Starlark.isStarlarkDefinedFunction(fn)
                         ? ProfilerTask.STARLARK_USER_FN
                         : ProfilerTask.STARLARK_BUILTIN_FN,
                     fn.getName());

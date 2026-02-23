@@ -94,6 +94,7 @@ import net.starlark.java.eval.Printer;
 import net.starlark.java.eval.Sequence;
 import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkCallable;
+import net.starlark.java.eval.StarlarkCallable;
 import net.starlark.java.eval.StarlarkFloat;
 import net.starlark.java.eval.StarlarkFunction;
 import net.starlark.java.eval.StarlarkInt;
@@ -512,7 +513,7 @@ public class StarlarkActionFactory implements StarlarkActionFactoryApi {
                 .getAnalysisEnvironment()
                 .getConstantMetadataArtifact(fragment, newFileRoot())
             : ruleContext.getDerivedArtifact(fragment, newFileRoot());
-    StarlarkFunction translationFunc = (StarlarkFunction) transformFuncObject;
+    StarlarkFunction translationFunc = Starlark.asStarlarkFunction(transformFuncObject);
     BuildInfoFileWriteAction action =
         new BuildInfoFileWriteAction(
             ruleContext.getActionOwner(),
@@ -1008,8 +1009,8 @@ public class StarlarkActionFactory implements StarlarkActionFactoryApi {
           Starlark.type(fn));
     }
 
-    if (fn instanceof StarlarkFunction sfn) {
-      validateIsTopLevelStarlarkFunction(sfn);
+    if (Starlark.isStarlarkDefinedFunction(fn)) {
+      validateIsTopLevelStarlarkFunction(Starlark.asStarlarkFunction(fn));
     }
   }
 
@@ -1021,7 +1022,13 @@ public class StarlarkActionFactory implements StarlarkActionFactoryApi {
     // This unfortunately disallows such trivially safe non-global
     // functions as "lambda x: x".
     // See https://github.com/bazelbuild/bazel/issues/12701.
-    if (fn.getModule().getGlobal(fn.getName()) != fn) {
+    Object global = fn.getModule().getGlobal(fn.getName());
+    // Check both direct identity and identity via toStarlarkFunction() wrapper.
+    // When the Truffle interpreter is active, fn may be a wrapper StarlarkFunction created by
+    // toStarlarkFunction(), while the global is the original StarlarkTruffleFunction.
+    if (global != fn
+        && !(global instanceof StarlarkCallable callable
+            && callable.toStarlarkFunction() == fn)) {
       throw Starlark.errorf(
           "to avoid unintended retention of analysis data structures, "
               + "the function (declared at %s) must be declared "

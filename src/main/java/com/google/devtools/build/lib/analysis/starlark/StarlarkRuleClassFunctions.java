@@ -630,7 +630,9 @@ public class StarlarkRuleClassFunctions implements StarlarkRuleFunctionsApi {
         parent,
         extendableUnchecked,
         implementation,
-        initializer == Starlark.NONE ? null : (StarlarkFunction) initializer,
+        initializer == Starlark.NONE
+            ? null
+            : ((StarlarkCallable) initializer).toStarlarkFunction(),
         test,
         attrs,
         implicitOutputs,
@@ -1023,9 +1025,10 @@ public class StarlarkRuleClassFunctions implements StarlarkRuleFunctionsApi {
     builder.setSubrules(subrules);
 
     if (implicitOutputs != Starlark.NONE) {
-      if (implicitOutputs instanceof StarlarkFunction) {
+      if (Starlark.isStarlarkDefinedFunction(implicitOutputs)) {
         StarlarkCallbackHelper callback =
-            new StarlarkCallbackHelper((StarlarkFunction) implicitOutputs, thread.getSemantics());
+            new StarlarkCallbackHelper(
+                Starlark.asStarlarkFunction(implicitOutputs), thread.getSemantics());
         builder.setImplicitOutputsFunction(
             new StarlarkImplicitOutputsFunctionWithCallback(callback));
       } else {
@@ -1443,14 +1446,15 @@ public class StarlarkRuleClassFunctions implements StarlarkRuleFunctionsApi {
 
     AspectPropagationPredicate propagationPredicate = null;
     if (!Starlark.isNullOrNone(rawPropagationPredicate)) {
-      if (!(rawPropagationPredicate instanceof StarlarkFunction starlarkFunction)) {
+      if (!Starlark.isStarlarkDefinedFunction(rawPropagationPredicate)) {
         throw Starlark.errorf(
             "Expected a function in 'propagation_predicate' parameter, got '%s'.",
             Starlark.type(propagationPredicate));
       }
 
       propagationPredicate =
-          new AspectPropagationPredicate(starlarkFunction, thread.getSemantics());
+          new AspectPropagationPredicate(
+              Starlark.asStarlarkFunction(rawPropagationPredicate), thread.getSemantics());
     }
 
     if (applyToGeneratingRules && propagationPredicate != null) {

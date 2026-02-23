@@ -106,6 +106,12 @@ public final class Mutability implements AutoCloseable {
   /** Controls access to {@link Freezable#unsafeShallowFreeze}. */
   private final boolean allowsUnsafeShallowFreeze;
 
+  /**
+   * An optional callback invoked when this Mutability is frozen. Used by the Truffle interpreter to
+   * invalidate JIT compilation assumptions when values become immutable.
+   */
+  private Runnable freezeListener;
+
   private Mutability(Object[] annotation, boolean allowsUnsafeShallowFreeze) {
     this.annotation = annotation;
     this.allowsUnsafeShallowFreeze = allowsUnsafeShallowFreeze;
@@ -180,7 +186,18 @@ public final class Mutability implements AutoCloseable {
   @CanIgnoreReturnValue
   public Mutability freeze() {
     this.iteratorCount = null;
+    if (freezeListener != null) {
+      freezeListener.run();
+    }
     return this;
+  }
+
+  /**
+   * Sets a callback that will be invoked when this Mutability is frozen. Only one listener is
+   * supported. Used by the Truffle interpreter to invalidate compilation assumptions.
+   */
+  public void setFreezeListener(Runnable listener) {
+    this.freezeListener = listener;
   }
 
   @Override

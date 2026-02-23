@@ -171,8 +171,9 @@ public sealed interface AspectPropagationEdgesSupplier<T> {
 
   public static AspectPropagationEdgesSupplier<String> createForAttrAspects(
       Object rawAttrAspects, StarlarkThread thread) throws EvalException {
-    if (rawAttrAspects instanceof StarlarkFunction attrAspectsFunction) {
-      return new AttrAspectsFunctionSupplier(attrAspectsFunction, thread.getSemantics());
+    if (Starlark.isStarlarkDefinedFunction(rawAttrAspects)) {
+      return new AttrAspectsFunctionSupplier(
+          Starlark.asStarlarkFunction(rawAttrAspects), thread.getSemantics());
     } else {
       return new FixedListSupplier<>(parseAttrAspects(rawAttrAspects, /* allowAll= */ true));
     }
@@ -181,9 +182,9 @@ public sealed interface AspectPropagationEdgesSupplier<T> {
   public static AspectPropagationEdgesSupplier<Label> createForToolchainsAspects(
       Object rawToolchainsAspects, StarlarkThread thread, LabelConverter labelConverter)
       throws EvalException {
-    if (rawToolchainsAspects instanceof StarlarkFunction toolchainsAspectsFunction) {
+    if (Starlark.isStarlarkDefinedFunction(rawToolchainsAspects)) {
       return new ToolchainsAspectsFunctionSupplier(
-          toolchainsAspectsFunction, thread.getSemantics());
+          Starlark.asStarlarkFunction(rawToolchainsAspects), thread.getSemantics());
     } else {
       return new FixedListSupplier<>(parseToolchainsAspects(rawToolchainsAspects, labelConverter));
     }

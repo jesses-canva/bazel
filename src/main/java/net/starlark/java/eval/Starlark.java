@@ -788,6 +788,40 @@ public final class Starlark {
   }
 
   /**
+   * Returns true if the value is a Starlark-defined function ({@link StarlarkFunction} or a Truffle
+   * equivalent that can be converted to one).
+   */
+  public static boolean isStarlarkDefinedFunction(Object value) {
+    if (value instanceof StarlarkFunction) {
+      return true;
+    }
+    if (value instanceof StarlarkCallable callable) {
+      return callable.toStarlarkFunction() != null;
+    }
+    return false;
+  }
+
+  /**
+   * Converts the value to a {@link StarlarkFunction}. This handles both {@code StarlarkFunction}
+   * instances and Truffle functions ({@code StarlarkTruffleFunction}) transparently.
+   *
+   * @throws ClassCastException if the value cannot be converted
+   */
+  public static StarlarkFunction asStarlarkFunction(Object value) {
+    if (value instanceof StarlarkFunction sf) {
+      return sf;
+    }
+    if (value instanceof StarlarkCallable callable) {
+      StarlarkFunction sf = callable.toStarlarkFunction();
+      if (sf != null) {
+        return sf;
+      }
+    }
+    throw new ClassCastException(
+        "Cannot convert " + value.getClass().getName() + " to StarlarkFunction");
+  }
+
+  /**
    * Calls the function-like value {@code fn} in the specified thread, passing it the given
    * positional and named arguments, as if by the Starlark expression {@code fn(*args, **kwargs)}.
    *
@@ -835,6 +869,15 @@ public final class Starlark {
     } catch (UncheckedEvalException | UncheckedEvalError ex) {
       throw ex; // already wrapped
     } catch (RuntimeException ex) {
+      // The Truffle interpreter wraps checked exceptions in RuntimeException because
+      // Truffle's call mechanism only supports unchecked exceptions. Unwrap them here.
+      Throwable cause = ex.getCause();
+      if (cause instanceof InterruptedException ie) {
+        throw ie;
+      }
+      if (cause instanceof EvalException ee) {
+        throw ee.ensureStack(thread);
+      }
       throw new UncheckedEvalException(ex, thread);
     } catch (Error ex) {
       throw new UncheckedEvalError(ex, thread);
@@ -870,6 +913,15 @@ public final class Starlark {
     } catch (UncheckedEvalException | UncheckedEvalError ex) {
       throw ex; // already wrapped
     } catch (RuntimeException ex) {
+      // The Truffle interpreter wraps checked exceptions in RuntimeException because
+      // Truffle's call mechanism only supports unchecked exceptions. Unwrap them here.
+      Throwable cause = ex.getCause();
+      if (cause instanceof InterruptedException ie) {
+        throw ie;
+      }
+      if (cause instanceof EvalException ee) {
+        throw ee.ensureStack(thread);
+      }
       throw new UncheckedEvalException(ex, thread);
     } catch (Error ex) {
       throw new UncheckedEvalError(ex, thread);
@@ -904,6 +956,15 @@ public final class Starlark {
     } catch (UncheckedEvalException | UncheckedEvalError ex) {
       throw ex; // already wrapped
     } catch (RuntimeException ex) {
+      // The Truffle interpreter wraps checked exceptions in RuntimeException because
+      // Truffle's call mechanism only supports unchecked exceptions. Unwrap them here.
+      Throwable cause = ex.getCause();
+      if (cause instanceof InterruptedException ie) {
+        throw ie;
+      }
+      if (cause instanceof EvalException ee) {
+        throw ee.ensureStack(thread);
+      }
       throw new UncheckedEvalException(ex, thread);
     } catch (Error ex) {
       throw new UncheckedEvalError(ex, thread);
@@ -1210,6 +1271,12 @@ public final class Starlark {
    */
   public static Object execFileProgram(Program prog, Module module, StarlarkThread thread)
       throws EvalException, InterruptedException {
+    // Dispatch to Truffle interpreter if enabled and available on the classpath.
+    if (thread.getSemantics().getBool(StarlarkSemantics.USE_TRUFFLE_INTERPRETER)
+        && isTruffleAvailable()) {
+      return execFileProgramTruffle(prog, module, thread);
+    }
+
     Resolver.Function rfn = prog.getResolvedFunction();
 
     // A given Module may be passed to execFileProgram multiple times in sequence,
@@ -1240,6 +1307,60 @@ public final class Starlark {
             /* freevars= */ Tuple.empty(),
             thread.getNextIdentityToken());
     return Starlark.positionalOnlyCall(thread, toplevel);
+  }
+
+  // Cached result of checking whether the Truffle interpreter classes are on the classpath.
+  // 0 = unchecked, 1 = available, -1 = unavailable.
+  private static volatile int truffleAvailability;
+
+  /** Returns true if the Truffle interpreter classes are on the classpath. */
+  private static boolean isTruffleAvailable() {
+    int avail = truffleAvailability;
+    if (avail == 0) {
+      try {
+        Class.forName("net.starlark.java.eval.truffle.TruffleIntegration");
+        truffleAvailability = 1;
+        return true;
+      } catch (ClassNotFoundException e) {
+        truffleAvailability = -1;
+        return false;
+      }
+    }
+    return avail > 0;
+  }
+
+  /**
+   * Executes a compiled Starlark program using the Truffle-based interpreter. This method is called
+   * when the USE_TRUFFLE_INTERPRETER semantics flag is enabled.
+   *
+   * <p>Uses reflection to call TruffleIntegration to avoid a circular dependency between eval/ and
+   * eval/truffle/.
+   */
+  private static Object execFileProgramTruffle(
+      Program prog, Module module, StarlarkThread thread)
+      throws EvalException, InterruptedException {
+    try {
+      Class<?> truffleIntegration =
+          Class.forName("net.starlark.java.eval.truffle.TruffleIntegration");
+      java.lang.reflect.Method execMethod =
+          truffleIntegration.getMethod(
+              "execFileProgram", Program.class, Module.class, StarlarkThread.class);
+      return execMethod.invoke(null, prog, module, thread);
+    } catch (java.lang.reflect.InvocationTargetException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof EvalException) {
+        throw (EvalException) cause;
+      }
+      if (cause instanceof InterruptedException) {
+        throw (InterruptedException) cause;
+      }
+      throw new EvalException("Truffle execution error: " + cause.getMessage(), cause);
+    } catch (ReflectiveOperationException e) {
+      throw new EvalException(
+          "Failed to load Truffle interpreter. Ensure the truffle runtime is on the classpath: "
+              + e.getMessage(),
+          e);
+    }
   }
 
   /**

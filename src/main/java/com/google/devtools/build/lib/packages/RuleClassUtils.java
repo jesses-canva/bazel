@@ -22,6 +22,7 @@ import com.google.devtools.build.lib.starlarkbuildapi.MacroFunctionApi;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
+import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkFunction;
 
 /** Rule class utilities. */
@@ -53,7 +54,7 @@ public final class RuleClassUtils {
       for (Map.Entry<String, Object> entry : builtins.predeclaredForBuild.entrySet()) {
         if (entry.getValue() instanceof RuleFunction) {
           ruleClasses.add(((RuleFunction) entry.getValue()).getRuleClass());
-        } else if ((entry.getValue() instanceof StarlarkFunction
+        } else if ((Starlark.isStarlarkDefinedFunction(entry.getValue())
                 || entry.getValue() instanceof MacroFunctionApi)
             && includeMacroWrappedRules) {
           // entry.getValue() is a macro in @_builtins which overrides a native rule and wraps a

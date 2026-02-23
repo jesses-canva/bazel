@@ -192,12 +192,12 @@ for example 'bench_int.star:bench_add32'.
       }
 
       // Sort bench_* functions by name.
-      TreeMap<String, StarlarkFunction> benchmarks = new TreeMap<>();
+      TreeMap<String, StarlarkCallable> benchmarks = new TreeMap<>();
       for (Map.Entry<String, Object> e : module.getGlobals().entrySet()) {
-        if (e.getKey().startsWith("bench_") && e.getValue() instanceof StarlarkFunction) {
+        if (e.getKey().startsWith("bench_") && e.getValue() instanceof StarlarkCallable) {
           String name = e.getKey();
           if (filter == null || filter.matcher(basename + ":" + name).find()) {
-            benchmarks.put(name, (StarlarkFunction) e.getValue());
+            benchmarks.put(name, (StarlarkCallable) e.getValue());
           }
         }
       }
@@ -214,7 +214,7 @@ for example 'bench_int.star:bench_add32'.
       System.out.printf(
           "%-25s %10s %10s %10s %10s %10s\n", //
           "benchmark", "ops", "cpu/op", "wall/op", "steps/op", "alloc/op");
-      for (Map.Entry<String, StarlarkFunction> e : benchmarks.entrySet()) {
+      for (Map.Entry<String, StarlarkCallable> e : benchmarks.entrySet()) {
         String name = e.getKey();
         System.out.flush(); // help user identify a slow benchmark
         Benchmark b = new Benchmark(name, e.getValue());
@@ -285,7 +285,7 @@ for example 'bench_int.star:bench_add32'.
   private static class Benchmark implements StarlarkValue {
 
     private final String name;
-    private final StarlarkFunction f;
+    private final StarlarkCallable f;
 
     // The cast assumes we use the "Sun" JVM, which measures per-thread allocation and CPU.
     private final ThreadMXBean threadMX = (ThreadMXBean) ManagementFactory.getThreadMXBean();
@@ -306,7 +306,7 @@ for example 'bench_int.star:bench_add32'.
     private long time; // wall time (ns)
     private long steps; // Starlark computation steps
 
-    private Benchmark(String name, StarlarkFunction f) {
+    private Benchmark(String name, StarlarkCallable f) {
       this.name = name;
       this.f = f;
     }
@@ -411,7 +411,23 @@ for example 'bench_int.star:bench_add32'.
     }
   }
 
-  private static final StarlarkSemantics semantics = StarlarkSemantics.DEFAULT;
+  private static final StarlarkSemantics semantics;
+
+  static {
+    // Allow explicit control of the Truffle interpreter via system property.
+    // If the property is set, use its value; otherwise use the default from StarlarkSemantics.
+    String truffleProp =
+        System.getProperty("net.starlark.java.eval.Benchmarks.useTruffleInterpreter");
+    if (truffleProp != null) {
+      boolean useTruffle = Boolean.parseBoolean(truffleProp);
+      semantics =
+          StarlarkSemantics.builder()
+              .setBool(StarlarkSemantics.USE_TRUFFLE_INTERPRETER, useTruffle)
+              .build();
+    } else {
+      semantics = StarlarkSemantics.DEFAULT;
+    }
+  }
 
   private Benchmarks() {}
 }

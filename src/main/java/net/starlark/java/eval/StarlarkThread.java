@@ -409,12 +409,24 @@ public final class StarlarkThread {
 
   /** Reports whether {@code fn} has been recursively reentered within this thread. */
   boolean isRecursiveCall(StarlarkFunction fn) {
+    return isRecursiveCallByCode(fn.rfn);
+  }
+
+  /**
+   * Reports whether a function with the given resolved code has been recursively reentered within
+   * this thread. Compares by resolved function identity (code), not closure value, to prevent
+   * defeating the check via the Y combinator.
+   */
+  boolean isRecursiveCallByCode(net.starlark.java.syntax.Resolver.Function code) {
     // Find fn buried within stack. (The top of the stack is assumed to be fn.)
     for (int i = callstack.size() - 2; i >= 0; --i) {
       Frame fr = callstack.get(i);
       // We compare code, not closure values, otherwise one can defeat the
       // check by writing the Y combinator.
-      if (fr.fn instanceof StarlarkFunction && ((StarlarkFunction) fr.fn).rfn.equals(fn.rfn)) {
+      // Use getResolvedFunction() which is a default method on StarlarkCallable,
+      // overridden by both StarlarkFunction and StarlarkTruffleFunction.
+      net.starlark.java.syntax.Resolver.Function frCode = fr.fn.getResolvedFunction();
+      if (frCode != null && frCode.equals(code)) {
         return true;
       }
     }
@@ -537,6 +549,28 @@ public final class StarlarkThread {
       if (fr.getFunction() instanceof StarlarkFunction) {
         if (depth == 0) {
           return (StarlarkFunction) fr.getFunction();
+        }
+        depth--;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the module of the {@code depth}-th innermost enclosing callable (of any type) that has
+   * a module, or null if none found. This supports the Truffle interpreter whose callables are
+   * StarlarkTruffleFunction (not StarlarkFunction) but still have a module.
+   */
+  @Nullable
+  Module getModuleOfInnermostEnclosingCallable(int depth) {
+    Preconditions.checkArgument(depth >= 0);
+    for (int i = callstack.size() - 1; i >= 0; i--) {
+      Debug.Frame fr = callstack.get(i);
+      StarlarkCallable fn = fr.getFunction();
+      Module module = fn.getModule();
+      if (module != null) {
+        if (depth == 0) {
+          return module;
         }
         depth--;
       }

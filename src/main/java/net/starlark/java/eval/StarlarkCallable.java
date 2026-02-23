@@ -17,7 +17,9 @@ package net.starlark.java.eval;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import javax.annotation.Nullable;
 import net.starlark.java.syntax.Location;
+import net.starlark.java.syntax.Resolver;
 
 /**
  * The StarlarkCallable interface is implemented by all Starlark values that may be called from
@@ -206,5 +208,34 @@ public interface StarlarkCallable extends StarlarkValue {
    */
   default Location getLocation() {
     return Location.BUILTIN;
+  }
+
+  /**
+   * Returns the resolved function code for this callable, or null if not applicable. Used for
+   * recursion detection. Overridden by {@code StarlarkFunction} and {@code
+   * StarlarkTruffleFunction}.
+   */
+  @Nullable
+  default Resolver.Function getResolvedFunction() {
+    return null;
+  }
+
+  /**
+   * Returns the module (file) in which this callable was defined, or null if not applicable.
+   * Overridden by {@code StarlarkFunction} and {@code StarlarkTruffleFunction}.
+   */
+  @Nullable
+  default Module getModule() {
+    return null;
+  }
+
+  /**
+   * Returns a {@link StarlarkFunction} equivalent to this callable, or null if conversion is not
+   * possible. This is used to bridge the Truffle interpreter's {@code StarlarkTruffleFunction} with
+   * Java API methods that expect {@code StarlarkFunction} parameters.
+   */
+  @Nullable
+  default StarlarkFunction toStarlarkFunction() {
+    return (this instanceof StarlarkFunction sf) ? sf : null;
   }
 }

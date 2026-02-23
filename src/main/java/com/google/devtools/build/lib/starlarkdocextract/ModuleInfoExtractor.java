@@ -237,8 +237,8 @@ public final class ModuleInfoExtractor {
           visitMacroFunction(qualifiedName, macroFunction);
         } else if (value instanceof StarlarkProvider starlarkProvider) {
           visitProvider(qualifiedName, starlarkProvider);
-        } else if (value instanceof StarlarkFunction starlarkFunction) {
-          visitFunction(qualifiedName, starlarkFunction);
+        } else if (Starlark.isStarlarkDefinedFunction(value)) {
+          visitFunction(qualifiedName, Starlark.asStarlarkFunction(value));
         } else if (value instanceof StarlarkDefinedAspect starlarkDefinedAspect) {
           visitAspect(qualifiedName, starlarkDefinedAspect);
         } else if (value instanceof StarlarkRepoRule starlarkRepoRule) {
@@ -530,10 +530,12 @@ public final class ModuleInfoExtractor {
       // TODO(b/276733504): if init is a dict-returning native method (e.g. `dict`), do we document
       // it? (This is very unlikely to be useful at present, and would require parsing annotations
       // on the native method.)
-      if (provider.getInit() instanceof StarlarkFunction) {
+      if (Starlark.isStarlarkDefinedFunction(provider.getInit())) {
         providerInfoBuilder.setInit(
             StarlarkFunctionInfoExtractor.fromNameAndFunction(
-                qualifiedName, (StarlarkFunction) provider.getInit(), context.labelRenderer()));
+                qualifiedName,
+                Starlark.asStarlarkFunction(provider.getInit()),
+                context.labelRenderer()));
       }
 
       moduleInfoBuilder.addProviderInfo(providerInfoBuilder);

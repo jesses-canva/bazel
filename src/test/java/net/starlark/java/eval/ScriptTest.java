@@ -262,6 +262,14 @@ public final class ScriptTest {
         if (utf8ByteStrings) {
           semanticsBuilder.setBool(StarlarkSemantics.INTERNAL_BAZEL_ONLY_UTF_8_BYTE_STRINGS, true);
         }
+        // Allow explicit control of the Truffle interpreter via system property.
+        // If the property is set, use its value; otherwise use the default from StarlarkSemantics.
+        String truffleProp =
+            System.getProperty("net.starlark.java.eval.ScriptTest.useTruffleInterpreter");
+        if (truffleProp != null) {
+          semanticsBuilder.setBool(
+              StarlarkSemantics.USE_TRUFFLE_INTERPRETER, Boolean.parseBoolean(truffleProp));
+        }
         StarlarkSemantics semantics = semanticsBuilder.build();
         Module module = Module.withPredeclared(semantics, predeclared.buildOrThrow());
         try (Mutability mu = Mutability.createAllowingShallowFreeze("test")) {

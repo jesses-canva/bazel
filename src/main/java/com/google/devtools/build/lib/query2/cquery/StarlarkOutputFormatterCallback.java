@@ -189,7 +189,7 @@ public class StarlarkOutputFormatterCallback extends CqueryThreadsafeCallback {
             exceptionMessagePrefix + "file does not define 'format'",
             ConfigurableQuery.Code.FORMAT_FUNCTION_ERROR);
       }
-      if (!(formatFn instanceof StarlarkFunction)) {
+      if (!Starlark.isStarlarkDefinedFunction(formatFn)) {
         throw new QueryException(
             exceptionMessagePrefix
                 + "got "
@@ -197,7 +197,7 @@ public class StarlarkOutputFormatterCallback extends CqueryThreadsafeCallback {
                 + " for 'format', want function",
             ConfigurableQuery.Code.FORMAT_FUNCTION_ERROR);
       }
-      this.formatFn = (StarlarkFunction) formatFn;
+      this.formatFn = Starlark.asStarlarkFunction(formatFn);
       if (this.formatFn.getParameterNames().size() != 1) {
         throw new QueryException(
             exceptionMessagePrefix + "'format' function must take exactly 1 argument",

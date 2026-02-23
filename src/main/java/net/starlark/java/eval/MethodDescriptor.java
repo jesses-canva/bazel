@@ -260,6 +260,10 @@ final class MethodDescriptor {
   Object call(Object obj, Object[] args, @Nullable Mutability mu)
       throws EvalException, InterruptedException {
     Preconditions.checkNotNull(obj);
+    // Convert StarlarkTruffleFunction args to StarlarkFunction where the Java method expects it.
+    // This is needed because the Truffle interpreter produces StarlarkTruffleFunction objects
+    // which are not assignable to StarlarkFunction but carry the same data.
+    convertTruffleFunctionsInArgs(args);
     Object result;
     try {
       result = method.invoke(obj, args);
@@ -443,6 +447,28 @@ final class MethodDescriptor {
             "function %s() is deprecated and will be removed soon. It may be temporarily re-enabled"
                 + " by setting --%s",
             name, conditionalCheck.disableWithFlag().substring(1)); // remove [+-] prefix
+      }
+    }
+  }
+
+  /**
+   * Scans the argument array and converts any {@code StarlarkCallable} (e.g., {@code
+   * StarlarkTruffleFunction}) to {@code StarlarkFunction} where the Java method's parameter type
+   * requires it. This avoids {@code IllegalArgumentException} from {@code Method.invoke} when the
+   * Truffle interpreter produces a function type that is not assignable to {@code StarlarkFunction}.
+   */
+  private void convertTruffleFunctionsInArgs(Object[] args) {
+    Class<?>[] paramTypes = method.getParameterTypes();
+    int len = Math.min(args.length, paramTypes.length);
+    for (int i = 0; i < len; i++) {
+      if (args[i] != null
+          && paramTypes[i] == StarlarkFunction.class
+          && !(args[i] instanceof StarlarkFunction)
+          && args[i] instanceof StarlarkCallable callable) {
+        StarlarkFunction sf = callable.toStarlarkFunction();
+        if (sf != null) {
+          args[i] = sf;
+        }
       }
     }
   }
