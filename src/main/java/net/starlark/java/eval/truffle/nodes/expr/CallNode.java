@@ -107,12 +107,12 @@ public final class CallNode extends StarlarkExpressionNode {
   /**
    * Reads the current values of all local variables from their Truffle frame slots and snapshots
    * them into the topmost {@link StarlarkThread.Frame} so that {@link Debug#getCallStack} sees
-   * up-to-date values (not stale initial-argument values from {@code frame.getArguments()}).
+   * up-to-date values.
    *
-   * <p>Fills the pre-allocated locals array installed by {@link
-   * StarlarkTruffleAccessor#pushCallStack} in-place, avoiding a per-call {@code Object[]}
-   * allocation in the hot path. Falls back to a fresh allocation when the pre-allocated array is
-   * absent or has the wrong size (e.g. on the very first call before push has run).
+   * <p>Uses a lazily-allocated locals array stored in the frame (no pre-allocation at push time).
+   * The first snapshot allocates {@code Object[numLocals]} and stores it on the frame; subsequent
+   * snapshots fill the same array in-place. Leaf functions (those that make no outgoing calls)
+   * never trigger this method, so their frame's locals array is never allocated.
    */
   @TruffleBoundary
   private static void snapshotCurrentLocals(StarlarkThread thread, VirtualFrame frame) {
@@ -124,14 +124,15 @@ public final class CallNode extends StarlarkExpressionNode {
     if (numLocals == 0) {
       return;
     }
-    // Try to fill the pre-allocated locals array in-place (avoids allocation on hot path).
+    // Use the cached locals array if already allocated; allocate and cache on first call.
     Object[] dest = StarlarkTruffleAccessor.getPreallocatedFrameLocals(thread);
     if (dest != null && dest.length == numLocals) {
+      // Fill the existing array in-place (no allocation).
       for (int i = 0; i < numLocals; i++) {
         dest[i] = frame.getObject(i);
       }
     } else {
-      // Fallback: allocate a fresh array (should only happen when push hasn't run yet).
+      // First call for this frame invocation: allocate and cache for future calls.
       Object[] locals = new Object[numLocals];
       for (int i = 0; i < numLocals; i++) {
         locals[i] = frame.getObject(i);

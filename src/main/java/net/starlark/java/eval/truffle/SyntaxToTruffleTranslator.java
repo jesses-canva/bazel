@@ -130,8 +130,9 @@ public final class SyntaxToTruffleTranslator {
   public FrameDescriptor buildFrameDescriptor(Resolver.Function rfn) {
     FrameDescriptor.Builder builder = FrameDescriptor.newBuilder();
     int numLocals = rfn.getLocals().size();
-    // Reserve extra slots for comprehension results (estimate)
-    int extraSlots = countComprehensions(rfn) + 4;
+    // Reserve exactly one extra slot per comprehension (each comprehension needs one result slot).
+    // No safety margin: countComprehensions is an exact count of allocateExtraSlot() calls.
+    int extraSlots = countComprehensions(rfn);
     for (int i = 0; i < numLocals + extraSlots; i++) {
       builder.addSlot(FrameSlotKind.Object, null, null);
     }

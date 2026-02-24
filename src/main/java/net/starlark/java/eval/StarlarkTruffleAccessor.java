@@ -213,16 +213,10 @@ public final class StarlarkTruffleAccessor {
   /** Pushes a function onto the thread's call stack. */
   public static void pushCallStack(StarlarkThread thread, StarlarkCallable fn) {
     thread.push(fn);
-    // Pre-allocate the frame's locals array so that inplaceSnapshotLocals can fill it without
-    // a per-call allocation. The pre-allocation happens once per function invocation; subsequent
-    // outgoing calls from this function reuse the same array.
-    net.starlark.java.syntax.Resolver.Function rfn = fn.getResolvedFunction();
-    if (rfn != null && thread.getCallStackSize() > 0) {
-      int n = rfn.getLocals().size();
-      if (n > 0) {
-        thread.frame(0).locals = new Object[n];
-      }
-    }
+    // Note: frame.locals is intentionally NOT pre-allocated here. The snapshotCurrentLocals
+    // method in CallNode allocates and caches it lazily on the first outgoing call from this
+    // frame. Leaf functions (those that make no outgoing calls) therefore never allocate a
+    // locals array, saving one Object[n] allocation per call to a leaf function.
   }
 
   /** Pops a function off the thread's call stack. */

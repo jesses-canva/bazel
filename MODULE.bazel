@@ -479,3 +479,9 @@ register_toolchains("@local_config_winsdk//:all")
 register_toolchains("//src/main/res:empty_rc_toolchain")
 
 register_toolchains("@graalvm_ce_toolchains//:gvm")
+
+# Register GraalVM CE as an optional Java runtime toolchain.
+# Selected when --java_runtime_version=graalvm_21 (or --tool_java_runtime_version=graalvm_21)
+# is passed; does not interfere with the default remotejdk_25 builds.
+register_toolchains("@graalvm_ce_toolchains//:toolchain")
+register_toolchains("@graalvm_ce_toolchains//:bootstrap_runtime_toolchain")

@@ -149,10 +149,11 @@ public final class StarlarkThread {
   /** A Frame records information about an active function call. */
   static final class Frame implements Debug.Frame {
     final StarlarkThread thread;
-    final StarlarkCallable fn; // the called function
+    StarlarkCallable fn; // the called function
 
-    @Nullable
-    final Debug.Debugger dbg = Debug.debugger.get(); // the debugger, if active for this frame
+    // The debugger active at the time this frame was pushed, if any.
+    // Non-final so the frame can be recycled across calls.
+    @Nullable Debug.Debugger dbg;
 
     // Current PC location. Initially fn.getLocation(); for Starlark functions,
     // it is updated at key points when it may be observed: calls, breakpoints, errors.
@@ -172,6 +173,19 @@ public final class StarlarkThread {
     private Frame(StarlarkThread thread, StarlarkCallable fn) {
       this.thread = thread;
       this.fn = fn;
+      this.dbg = Debug.debugger.get();
+    }
+
+    /**
+     * Resets this frame for reuse on the next push. Called by {@link StarlarkThread#push} when
+     * recycling a previously-popped frame to avoid a fresh allocation.
+     */
+    void reset(StarlarkCallable fn) {
+      this.fn = fn;
+      this.dbg = Debug.debugger.get();
+      this.errorLocationSet = false;
+      // locals is already null (cleared by pop() before recycling).
+      this.profileStartTimeNanos = 0;
     }
 
     // Updates the PC location in this frame.
@@ -261,6 +275,12 @@ public final class StarlarkThread {
   /** Stack of active function calls. */
   private final ArrayList<Frame> callstack = new ArrayList<>();
 
+  /**
+   * A single recycled {@link Frame} available for reuse on the next {@link #push}. Avoids
+   * allocating a new Frame object on every Starlark-to-Starlark function call.
+   */
+  @Nullable private Frame recycledFrame;
+
   /** A hook for notifications of assignments at top level. */
   PostAssignHook postAssignHook;
 
@@ -298,7 +318,14 @@ public final class StarlarkThread {
       }
     }
 
-    Frame fr = new Frame(this, fn);
+    // Reuse a recycled frame if available to avoid a fresh allocation.
+    Frame fr = recycledFrame;
+    if (fr != null) {
+      recycledFrame = null;
+      fr.reset(fn);
+    } else {
+      fr = new Frame(this, fn);
+    }
     callstack.add(fr);
 
     // Notify debug tools of the thread's first push.
@@ -349,6 +376,15 @@ public final class StarlarkThread {
     // Notify debug tools of the thread's last pop.
     if (last == 0 && Debug.threadHook != null) {
       Debug.threadHook.onPopLast(this);
+    }
+
+    // Recycle this frame for the next push to avoid a fresh allocation.
+    // Skip recycling when a debugger is active: the debugger may hold a
+    // reference to this frame (e.g. for inspection after beforeReturn) and
+    // could observe stale values after the frame is reused.
+    if (fr.dbg == null) {
+      fr.locals = null; // drop locals to avoid retaining stale values
+      recycledFrame = fr;
     }
   }
 
