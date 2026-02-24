@@ -20,6 +20,8 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
 import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkFunction;
+import net.starlark.java.eval.StarlarkThread;
+import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.StarlarkTruffleLanguage;
 import net.starlark.java.eval.truffle.runtime.StarlarkReturnException;
 
@@ -58,7 +60,8 @@ public final class StarlarkModuleRootNode extends RootNode {
     try {
       body.executeVoid(frame);
     } catch (StarlarkReturnException e) {
-      return e.getResult();
+      return StarlarkTruffleAccessor.getTruffleReturnValue(
+          (StarlarkThread) frame.getArguments()[1]);
     }
     return Starlark.NONE;
   }

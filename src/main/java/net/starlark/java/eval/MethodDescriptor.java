@@ -61,6 +61,14 @@ final class MethodDescriptor {
 
   @Nullable private final ConditionalCheck conditionalCheck;
 
+  /**
+   * Lazily-initialized singleton {@link StarlarkCallable} used as a call-stack placeholder when
+   * invoking this method via {@link StarlarkTruffleAccessor#callBuiltinPositionally}. Avoids
+   * allocating a full {@link BuiltinFunction} object per method call in the Truffle interpreter.
+   * Only {@link StarlarkCallable#getName()} is meaningful on this object.
+   */
+  @Nullable private volatile StarlarkCallable stackCallable;
+
   private enum HowToHandleReturn {
     NULL_TO_NONE, // any Starlark value; null -> None
     ERROR_ON_NULL, // any Starlark value; null -> error
@@ -340,6 +348,42 @@ final class MethodDescriptor {
   /** @see StarlarkMethod#name() */
   String getName() {
     return name;
+  }
+
+  /**
+   * Returns a cached singleton {@link StarlarkCallable} that serves as a call-stack placeholder
+   * for this descriptor. The returned object's {@link StarlarkCallable#getName()} returns this
+   * method's name. It must not be invoked directly; it exists only to give the Starlark call stack
+   * a meaningful name entry when invoking builtins via the descriptor-direct path.
+   *
+   * <p>Created lazily on first use; benign data race (all threads produce equivalent objects).
+   */
+  StarlarkCallable getOrCreateStackCallable() {
+    StarlarkCallable sc = stackCallable;
+    if (sc == null) {
+      final String methodName = name;
+      sc =
+          new StarlarkCallable() {
+            @Override
+            public String getName() {
+              return methodName;
+            }
+
+            @Override
+            public void repr(Printer printer, StarlarkSemantics semantics) {
+              printer.append("<built-in function ").append(methodName).append(">");
+            }
+
+            @Override
+            public StarlarkCallable.ArgumentProcessor requestArgumentProcessor(
+                StarlarkThread thread) throws EvalException {
+              throw new UnsupportedOperationException(
+                  "stack placeholder callable must not be invoked");
+            }
+          };
+      stackCallable = sc;
+    }
+    return sc;
   }
 
   Method getMethod() {

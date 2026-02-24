@@ -120,6 +120,161 @@ public final class StarlarkTruffleFunction implements StarlarkCallable {
     return new TruffleArgumentProcessor(this, thread);
   }
 
+  /**
+   * Returns {@code true} if this function is "simple" for the positional fast path: no {@code
+   * *args}, no {@code **kwargs}, no free-variable cells, and no keyword-only parameters. Callers
+   * can cache this value as {@code @CompilationFinal} to make the check free in compiled code.
+   */
+  public boolean isSimplePositionalFunction() {
+    return !rfn.hasVarargs()
+        && !rfn.hasKwargs()
+        && rfn.getCellIndices().length == 0
+        // No keyword-only parameters (all non-residual params are ordinary positional).
+        && rfn.getNumNonResidualParameters() == rfn.getNumOrdinaryParameters();
+  }
+
+  /**
+   * Fast path for "simple" positional-only calls (no {@code *args}, {@code **kwargs}, cells, or
+   * keyword-only parameters). Builds the args array directly without allocating a {@link
+   * TruffleArgumentProcessor} or its intermediate locals array, saving two allocations per call.
+   *
+   * <p>Handles the common case where the caller passes exactly {@code getNumOrdinaryParameters()}
+   * arguments (no defaults needed) and the less-common case where trailing defaults fill in
+   * omitted arguments. Dynamic type checking must be disabled; callers are responsible for
+   * checking {@code StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING} and falling
+   * back to {@link #preparePositionalArgs} when it is enabled.
+   *
+   * @return args array ready for {@code CallTarget.call()}: {@code [callee, thread, locals...]}
+   * @throws EvalException if too many positional args or a required argument is missing
+   */
+  public Object[] preparePositionalArgsDirect(StarlarkThread thread, Object[] positional)
+      throws EvalException {
+    int numOrdinaryParams = rfn.getNumOrdinaryParameters();
+
+    // Validate count: too many positional arguments?
+    if (positional.length > numOrdinaryParams) {
+      throw Starlark.errorf(
+          "%s() accepts no more than %d positional argument%s but got %d",
+          getName(),
+          numOrdinaryParams,
+          numOrdinaryParams == 1 ? "" : "s",
+          positional.length);
+    }
+
+    // Validate defaults for missing trailing parameters.
+    if (positional.length < numOrdinaryParams) {
+      int numDefaults = defaultValues.size();
+      int firstDefault = numOrdinaryParams - numDefaults;
+      for (int i = positional.length; i < numOrdinaryParams; i++) {
+        int dfltIndex = i - firstDefault;
+        if (dfltIndex < 0 || defaultValues.get(dfltIndex) == StarlarkFunction.MANDATORY) {
+          throw Starlark.errorf(
+              "%s() missing %d required positional argument%s: %s",
+              getName(),
+              1,
+              "",
+              rfn.getParameterNames().get(i));
+        }
+      }
+    }
+
+    // Build the args array directly: [callee, thread, param0, ..., paramN-1, null (body locals)]
+    int totalLocals = rfn.getLocals().size();
+    Object[] args = new Object[totalLocals + 2];
+    args[0] = this;
+    args[1] = thread;
+    System.arraycopy(positional, 0, args, 2, positional.length);
+
+    // Apply defaults for missing trailing params.
+    if (positional.length < numOrdinaryParams) {
+      int numDefaults = defaultValues.size();
+      int firstDefault = numOrdinaryParams - numDefaults;
+      for (int i = positional.length; i < numOrdinaryParams; i++) {
+        args[i + 2] = defaultValues.get(i - firstDefault);
+      }
+    }
+
+    return args;
+  }
+
+  /**
+   * Fast path for "simple" single-argument positional calls. Equivalent to {@link
+   * #preparePositionalArgsDirect} but specialized for exactly one caller-supplied argument,
+   * eliminating the need for the caller to allocate an intermediate {@code Object[1]} array.
+   *
+   * <p>Only valid for "simple" functions ({@link #isSimplePositionalFunction()} returns {@code
+   * true}); dynamic type checking must be disabled; callers are responsible for checking these
+   * preconditions and falling back to {@link #preparePositionalArgs} when they do not hold.
+   *
+   * @return args array ready for {@code CallTarget.call()}: {@code [callee, thread, locals...]}
+   * @throws EvalException if too many positional args or a required argument is missing
+   */
+  public Object[] preparePositionalArgsDirect1(StarlarkThread thread, Object arg0)
+      throws EvalException {
+    int numOrdinaryParams = rfn.getNumOrdinaryParameters();
+
+    // Validate count: too many positional arguments?
+    if (1 > numOrdinaryParams) {
+      throw Starlark.errorf(
+          "%s() accepts no more than %d positional argument%s but got %d",
+          getName(),
+          numOrdinaryParams,
+          numOrdinaryParams == 1 ? "" : "s",
+          1);
+    }
+
+    // Validate defaults for missing trailing parameters (params 1..numOrdinaryParams-1).
+    if (1 < numOrdinaryParams) {
+      int numDefaults = defaultValues.size();
+      int firstDefault = numOrdinaryParams - numDefaults;
+      for (int i = 1; i < numOrdinaryParams; i++) {
+        int dfltIndex = i - firstDefault;
+        if (dfltIndex < 0 || defaultValues.get(dfltIndex) == StarlarkFunction.MANDATORY) {
+          throw Starlark.errorf(
+              "%s() missing 1 required positional argument: %s",
+              getName(), rfn.getParameterNames().get(i));
+        }
+      }
+    }
+
+    // Build the args array directly: [callee, thread, arg0, param1_default, ..., null (body locals)]
+    int totalLocals = rfn.getLocals().size();
+    Object[] args = new Object[totalLocals + 2];
+    args[0] = this;
+    args[1] = thread;
+    args[2] = arg0;
+
+    // Apply defaults for missing trailing params (params 1..numOrdinaryParams-1).
+    if (1 < numOrdinaryParams) {
+      int numDefaults = defaultValues.size();
+      int firstDefault = numOrdinaryParams - numDefaults;
+      for (int i = 1; i < numOrdinaryParams; i++) {
+        args[i + 2] = defaultValues.get(i - firstDefault);
+      }
+    }
+
+    return args;
+  }
+
+  /**
+   * Prepares the Truffle call arguments for a positional-only call without executing the function.
+   *
+   * <p>Validates argument counts, applies defaults, and spills cells. Used by {@link
+   * net.starlark.java.eval.truffle.nodes.expr.DispatchNode} for the inline-cached fast path, where
+   * argument preparation happens in a {@code @TruffleBoundary} helper but the actual
+   * {@code CallTarget.call()} happens in compiled Truffle code.
+   *
+   * @return args array ready for {@code CallTarget.call()}: {@code [callee, thread, locals...]}
+   */
+  public Object[] preparePositionalArgs(StarlarkThread thread, Object[] positional)
+      throws EvalException, InterruptedException {
+    TruffleArgumentProcessor proc = new TruffleArgumentProcessor(this, thread);
+    for (Object arg : positional) {
+      proc.addPositionalArg(arg);
+    }
+    return proc.prepareCallArgs(thread);
+  }
+
   public void export(StarlarkThread thread, String name) {
     if (!token.getOwner().equals(
             net.starlark.java.eval.StarlarkTruffleAccessor.getOwner(thread))) {

@@ -16,6 +16,8 @@ package net.starlark.java.eval.truffle.nodes.stmt;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import javax.annotation.Nullable;
 import net.starlark.java.eval.Starlark;
+import net.starlark.java.eval.StarlarkThread;
+import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.eval.truffle.nodes.StarlarkStatementNode;
 import net.starlark.java.eval.truffle.runtime.StarlarkReturnException;
@@ -37,6 +39,9 @@ public final class ReturnNode extends StarlarkStatementNode {
     } else {
       result = Starlark.NONE;
     }
-    throw new StarlarkReturnException(result);
+    // Store the return value on the thread so the RootNode can retrieve it without an allocation.
+    StarlarkThread thread = (StarlarkThread) frame.getArguments()[1];
+    StarlarkTruffleAccessor.setTruffleReturnValue(thread, result);
+    throw StarlarkReturnException.INSTANCE;
   }
 }

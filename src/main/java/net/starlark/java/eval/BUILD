@@ -20,7 +20,6 @@ java_library(
         "CpuProfiler.java",
         "Debug.java",
         "Dict.java",
-        "Eval.java",
         "EvalException.java",
         "EvalUtils.java",
         "FlagGuardedValue.java",

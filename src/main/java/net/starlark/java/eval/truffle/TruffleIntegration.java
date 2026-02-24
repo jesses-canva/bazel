@@ -30,8 +30,8 @@ import net.starlark.java.syntax.Resolver;
 /**
  * Entry point for the Truffle-based Starlark interpreter.
  *
- * <p>This class is called from {@link Starlark#execFileProgram} when the USE_TRUFFLE_INTERPRETER
- * flag is enabled. It translates the resolved AST to Truffle nodes and executes them.
+ * <p>This class is called from {@link Starlark#execFileProgram} via reflection. It translates the
+ * resolved AST to Truffle nodes and executes them.
  */
 public final class TruffleIntegration {
 
@@ -99,28 +99,20 @@ public final class TruffleIntegration {
     // CallTarget.call() wraps exceptions in RuntimeException, so we unwrap them here.
     try {
       return callTarget.call(syntheticCallee, thread);
+    } catch (Starlark.UncheckedEvalException | Starlark.UncheckedEvalError e) {
+      // Already properly wrapped by Starlark.positionalOnlyCall() etc. - re-throw directly.
+      throw e;
     } catch (RuntimeException e) {
       Throwable cause = e.getCause();
-      if (cause instanceof EvalException) {
-        throw (EvalException) cause;
+      if (cause instanceof EvalException evalEx) {
+        throw net.starlark.java.eval.StarlarkTruffleAccessor.ensureEvalExceptionStack(evalEx, thread);
       }
       if (cause instanceof InterruptedException) {
         throw (InterruptedException) cause;
       }
-      // Include the root cause details and stack trace for debugging.
-      Throwable root = e;
-      while (root.getCause() != null) {
-        root = root.getCause();
-      }
-      StringBuilder detail = new StringBuilder();
-      detail.append(root.getClass().getSimpleName()).append(": ").append(root.getMessage());
-      for (StackTraceElement ste : root.getStackTrace()) {
-        if (ste.getClassName().startsWith("com.google.devtools")
-            || ste.getClassName().startsWith("net.starlark")) {
-          detail.append("\n  at ").append(ste);
-        }
-      }
-      throw new EvalException("Truffle execution error: " + detail, e);
+      // Wrap other RuntimeExceptions so the original is accessible via getCause(), matching
+      // the Starlark.positionalOnlyCall() behavior of wrapping in UncheckedEvalException.
+      throw new RuntimeException(e);
     } finally {
       net.starlark.java.eval.StarlarkTruffleAccessor.popCallStack(thread);
     }

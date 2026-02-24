@@ -19,6 +19,8 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
 import net.starlark.java.eval.Starlark;
+import net.starlark.java.eval.StarlarkThread;
+import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.StarlarkTruffleLanguage;
 import net.starlark.java.eval.truffle.runtime.StarlarkReturnException;
 
@@ -61,7 +63,9 @@ public final class StarlarkRootNode extends RootNode {
     try {
       body.executeVoid(frame);
     } catch (StarlarkReturnException e) {
-      return e.getResult();
+      // The return value was stored on the thread by ReturnNode (no per-return allocation).
+      return StarlarkTruffleAccessor.getTruffleReturnValue(
+          (StarlarkThread) frame.getArguments()[1]);
     }
     return Starlark.NONE;
   }

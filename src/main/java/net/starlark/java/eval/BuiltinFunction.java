@@ -101,87 +101,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
    */
   private Object[] getPositionalOnlyArgumentVector(StarlarkThread thread, Object[] positional)
       throws EvalException {
-
-    // Overview of steps:
-    // - allocate vector of actual arguments of correct size.
-    // - process positional arguments, accumulating surplus ones into *args.
-    // - set default values for missing optionals, and report missing mandatory parameters.
-    // - set special parameters.
-    // The static checks ensure that positional parameters appear before named,
-    // and mandatory positionals appear before optional.
-    // Flag-disabled parameters are skipped during argument matching, as if they do not exist. They
-    // are instead assigned their flag-disabled values.
-
-    ParamDescriptor[] parameters = desc.getParameters();
-
-    // Allocate argument vector.
-    int n = parameters.length;
-    if (desc.acceptsExtraArgs()) {
-      n++;
-    }
-    if (desc.acceptsExtraKwargs()) {
-      n++;
-    }
-    if (desc.isUseStarlarkThread()) {
-      n++;
-    }
-    Object[] vector = new Object[n];
-
-    // positional arguments
-    int paramIndex = 0;
-    int argIndex = 0;
-    if (obj instanceof String) {
-      // String methods get the string as an extra argument
-      // because their true receiver is StringModule.INSTANCE.
-      vector[paramIndex++] = obj;
-    }
-    for (; argIndex < positional.length && paramIndex < parameters.length; paramIndex++) {
-      ParamDescriptor param = parameters[paramIndex];
-      if (!param.isPositional()) {
-        break;
-      }
-
-      // disabled?
-      if (!param.isEnabled(thread)) {
-        // Skip disabled parameter as if not present at all.
-        // The default value will be filled in below.
-        continue;
-      }
-
-      Object value = positional[argIndex++];
-      checkParamValue(param, value);
-      vector[paramIndex] = convertIfStarlarkFunctionExpected(param, value);
-    }
-
-    // *args
-    Tuple varargs = null;
-    if (desc.acceptsExtraArgs()) {
-      varargs = Tuple.wrap(Arrays.copyOfRange(positional, argIndex, positional.length));
-    } else if (argIndex < positional.length) {
-      if (argIndex == 0) {
-        throw Starlark.errorf("%s() got unexpected positional argument", getName());
-      } else {
-        throw Starlark.errorf(
-            "%s() accepts no more than %d positional argument%s but got %d",
-            getName(), argIndex, plural(argIndex), positional.length);
-      }
-    }
-
-    applyDefaultsReportMissingArgs(parameters, vector);
-
-    // special parameters
-    int i = parameters.length;
-    if (desc.acceptsExtraArgs()) {
-      vector[i++] = varargs;
-    }
-    if (desc.acceptsExtraKwargs()) {
-      vector[i++] = Dict.wrap(thread.mutability(), Maps.newLinkedHashMapWithExpectedSize(1));
-    }
-    if (desc.isUseStarlarkThread()) {
-      vector[i++] = thread;
-    }
-
-    return vector;
+    return buildPositionalVector(getName(), obj, desc, thread, positional);
   }
 
   /**
@@ -467,6 +387,17 @@ public sealed class BuiltinFunction implements StarlarkCallable
 
   private void applyDefaultsReportMissingArgs(ParamDescriptor[] parameters, Object[] vector)
       throws EvalException {
+    applyDefaultsReportMissingArgs(getName(), parameters, vector);
+  }
+
+  /**
+   * Fills in default values for missing parameters and throws {@link EvalException} for any
+   * required parameters that are still missing. Static variant used by both the instance path
+   * (via {@link #applyDefaultsReportMissingArgs(ParamDescriptor[], Object[])}) and the
+   * descriptor-direct call path in {@link #buildPositionalVector}.
+   */
+  static void applyDefaultsReportMissingArgs(
+      String callableName, ParamDescriptor[] parameters, Object[] vector) throws EvalException {
     // Set default values for missing parameters,
     // and report any that are still missing.
     List<String> missingPositional = null;
@@ -493,7 +424,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
     if (missingPositional != null) {
       throw Starlark.errorf(
           "%s() missing %d required positional argument%s: %s",
-          getName(),
+          callableName,
           missingPositional.size(),
           plural(missingPositional.size()),
           Joiner.on(", ").join(missingPositional));
@@ -501,7 +432,7 @@ public sealed class BuiltinFunction implements StarlarkCallable
     if (missingNamed != null) {
       throw Starlark.errorf(
           "%s() missing %d required named argument%s: %s",
-          getName(),
+          callableName,
           missingNamed.size(),
           plural(missingNamed.size()),
           Joiner.on(", ").join(missingNamed));
@@ -513,6 +444,16 @@ public sealed class BuiltinFunction implements StarlarkCallable
   }
 
   private void checkParamValue(ParamDescriptor param, Object value) throws EvalException {
+    checkParamValue(getName(), param, value);
+  }
+
+  /**
+   * Checks that {@code value} satisfies the type constraints of {@code param}. Static variant used
+   * by both the instance path (via {@link #checkParamValue(ParamDescriptor, Object)}) and the
+   * descriptor-direct call path in {@link #buildPositionalVector}.
+   */
+  static void checkParamValue(String callableName, ParamDescriptor param, Object value)
+      throws EvalException {
     List<Class<?>> allowedClasses = param.getAllowedClasses();
     if (allowedClasses == null) {
       return;
@@ -538,8 +479,91 @@ public sealed class BuiltinFunction implements StarlarkCallable
     if (!ok) {
       throw Starlark.errorf(
           "in call to %s(), parameter '%s' got value of type '%s', want '%s'",
-          getName(), param.getName(), Starlark.type(value), param.getTypeErrorMessage());
+          callableName, param.getName(), Starlark.type(value), param.getTypeErrorMessage());
     }
+  }
+
+  /**
+   * Builds the argument vector for a positional-only call to the given {@code desc} with
+   * {@code receiver} and {@code positional} arguments. This is a static version of {@link
+   * #getPositionalOnlyArgumentVector} that does not require a {@link BuiltinFunction} object.
+   *
+   * <p>Used by {@link StarlarkTruffleAccessor#callBuiltinPositionally} to call builtin methods
+   * via their descriptor directly, avoiding the {@link BuiltinFunction#of} allocation.
+   */
+  static Object[] buildPositionalVector(
+      String name, Object obj, MethodDescriptor desc, StarlarkThread thread, Object[] positional)
+      throws EvalException {
+    ParamDescriptor[] parameters = desc.getParameters();
+
+    // Allocate argument vector.
+    int n = parameters.length;
+    if (desc.acceptsExtraArgs()) {
+      n++;
+    }
+    if (desc.acceptsExtraKwargs()) {
+      n++;
+    }
+    if (desc.isUseStarlarkThread()) {
+      n++;
+    }
+    Object[] vector = new Object[n];
+
+    // positional arguments
+    int paramIndex = 0;
+    int argIndex = 0;
+    if (obj instanceof String) {
+      // String methods get the string as an extra argument
+      // because their true receiver is StringModule.INSTANCE.
+      vector[paramIndex++] = obj;
+    }
+    for (; argIndex < positional.length && paramIndex < parameters.length; paramIndex++) {
+      ParamDescriptor param = parameters[paramIndex];
+      if (!param.isPositional()) {
+        break;
+      }
+
+      // disabled?
+      if (!param.isEnabled(thread)) {
+        // Skip disabled parameter as if not present at all.
+        // The default value will be filled in below.
+        continue;
+      }
+
+      Object value = positional[argIndex++];
+      checkParamValue(name, param, value);
+      vector[paramIndex] = convertIfStarlarkFunctionExpected(param, value);
+    }
+
+    // *args
+    Tuple varargs = null;
+    if (desc.acceptsExtraArgs()) {
+      varargs = Tuple.wrap(Arrays.copyOfRange(positional, argIndex, positional.length));
+    } else if (argIndex < positional.length) {
+      if (argIndex == 0) {
+        throw Starlark.errorf("%s() got unexpected positional argument", name);
+      } else {
+        throw Starlark.errorf(
+            "%s() accepts no more than %d positional argument%s but got %d",
+            name, argIndex, plural(argIndex), positional.length);
+      }
+    }
+
+    applyDefaultsReportMissingArgs(name, parameters, vector);
+
+    // special parameters
+    int i = parameters.length;
+    if (desc.acceptsExtraArgs()) {
+      vector[i++] = varargs;
+    }
+    if (desc.acceptsExtraKwargs()) {
+      vector[i++] = Dict.wrap(thread.mutability(), Maps.newLinkedHashMapWithExpectedSize(1));
+    }
+    if (desc.isUseStarlarkThread()) {
+      vector[i++] = thread;
+    }
+
+    return vector;
   }
 
   /**

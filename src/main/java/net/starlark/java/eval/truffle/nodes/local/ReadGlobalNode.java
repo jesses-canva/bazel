@@ -14,23 +14,41 @@
 package net.starlark.java.eval.truffle.nodes.local;
 
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import net.starlark.java.eval.EvalException;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.eval.truffle.runtime.StarlarkTruffleFunction;
 
 /** Reads a global variable via the callee function's module and global index mapping. */
 public final class ReadGlobalNode extends StarlarkExpressionNode {
     @CompilationFinal private final int progIndex;
+    @CompilationFinal private final String name;
 
-    public ReadGlobalNode(int progIndex) {
+    public ReadGlobalNode(int progIndex, String name) {
         this.progIndex = progIndex;
+        this.name = name;
     }
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         Object[] args = frame.getArguments();
         StarlarkTruffleFunction callee = (StarlarkTruffleFunction) args[0];
-        return net.starlark.java.eval.StarlarkTruffleAccessor.getGlobalByIndex(
+        Object value = net.starlark.java.eval.StarlarkTruffleAccessor.getGlobalByIndex(
                 callee.getModule(), callee.getGlobalIndex()[progIndex]);
+        if (value == null) {
+            throwUninitialized(name);
+        }
+        return value;
+    }
+
+    @TruffleBoundary
+    private static void throwUninitialized(String varName) {
+        try {
+            throw new EvalException(
+                "global variable '" + varName + "' is referenced before assignment.");
+        } catch (EvalException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

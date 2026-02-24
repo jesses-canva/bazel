@@ -41,12 +41,15 @@ public final class ForNode extends StarlarkStatementNode {
     @Override
     public void executeVoid(VirtualFrame frame) {
         StarlarkThread thread = (StarlarkThread) frame.getArguments()[1];
-        checkInterrupt(thread);
         Object seq = collection.executeGeneric(frame);
         Iterable<?> iterable = toIterable(seq);
         StarlarkTruffleAccessor.addIterator(seq);
         try {
             for (Object element : iterable) {
+                // Skip the Thread.interrupted() native call when not interruptible (common case).
+                if (StarlarkTruffleAccessor.isInterruptible(thread)) {
+                    checkInterruptBoundary(thread);
+                }
                 variable.executeAssign(frame, element);
                 try {
                     body.executeVoid(frame);
@@ -62,7 +65,7 @@ public final class ForNode extends StarlarkStatementNode {
     }
 
     @TruffleBoundary
-    private static void checkInterrupt(StarlarkThread thread) {
+    private static void checkInterruptBoundary(StarlarkThread thread) {
         try {
             StarlarkTruffleAccessor.checkInterrupt(thread);
         } catch (InterruptedException e) {

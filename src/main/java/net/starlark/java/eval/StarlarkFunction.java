@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.starlark.java.annot.StarlarkBuiltin;
-import net.starlark.java.eval.StarlarkThread.Frame;
 import net.starlark.java.spelling.SpellChecker;
 import net.starlark.java.syntax.Location;
 import net.starlark.java.syntax.Resolver;
@@ -70,21 +69,6 @@ public final class StarlarkFunction implements StarlarkCallable {
     this.defaultValues = defaultValues;
     this.freevars = freevars;
     this.token = token;
-  }
-
-  // Sets a global variable, given its index in this function's compiled Program.
-  void setGlobal(int progIndex, Object value) {
-    module.setGlobalByIndex(globalIndex[progIndex], value);
-  }
-
-  // Gets the value of a global variable, given its index in this function's compiled Program.
-  @Nullable
-  Object getGlobal(int progIndex) {
-    return module.getGlobalByIndex(globalIndex[progIndex]);
-  }
-
-  boolean isToplevel() {
-    return rfn.isToplevel();
   }
 
   /** Whether this function is defined at the top level of a file. */
@@ -521,90 +505,14 @@ public final class StarlarkFunction implements StarlarkCallable {
 
     @Override
     public Object call(StarlarkThread thread) throws EvalException, InterruptedException {
-      // Check positional args count
-      int numOrdinaryParams = owner.getNumOrdinaryParameters();
-      if (numNonSurplusPositionalArgs > numOrdinaryParams) {
-        if (numOrdinaryParams > 0) {
-          throw Starlark.errorf(
-              "%s() accepts no more than %d positional argument%s but got %d",
-              owner.getName(),
-              numOrdinaryParams,
-              plural(numOrdinaryParams),
-              numNonSurplusPositionalArgs);
-        } else {
-          throw Starlark.errorf(
-              "%s() does not accept positional arguments, but got %d",
-              owner.getName(), numNonSurplusPositionalArgs);
-        }
-      }
-      checkUnexpectedNamedArgs();
-      Resolver.Function rfn = owner.rfn;
-      if (rfn.hasVarargs()) {
-        locals[getVarArgsIndex()] =
-            varArgs == null
-                ? Tuple.empty()
-                : varArgs.size() == 1
-                    ? Tuple.of(varArgs.getFirst())
-                    : Tuple.wrap(varArgs.toArray());
-      }
-      if (rfn.hasKwargs()) {
-        locals[getKwargsIndex()] =
-            kwargs == null ? Dict.of(thread.mutability()) : Dict.wrap(thread.mutability(), kwargs);
-      }
-
-      boolean dynamicTyping =
-          thread
-              .getSemantics()
-              .getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING);
-      Types.CallableType functionType =
-          dynamicTyping && owner.getStarlarkType() instanceof Types.CallableType
-              ? (Types.CallableType) owner.getStarlarkType()
-              : null;
-
-      // Argument value dynamic type check, if enabled.
-      if (functionType != null) {
-        for (int i = 0; i < functionType.getParameterTypes().size(); i++) {
-          if (locals[i] == null) {
-            continue; // the default value is already type checked
-          }
-          StarlarkType parameterType = functionType.getParameterTypeByPos(i);
-          if (!TypeChecker.isValueSubtypeOf(locals[i], parameterType)) {
-            throw Starlark.errorf(
-                "in call to %s(), parameter '%s' got value of type '%s', want '%s'",
-                owner.getName(),
-                owner.getParameterNames().get(i),
-                Starlark.getStarlarkType(locals[i]),
-                parameterType);
-          }
-        }
-        // TODO(ilist@): typecheck *args and **kwargs, once we have more than primitive types
-      }
-
-      applyDefaultsReportMissingArgs();
-      // Spill indicated locals to cells
-      for (int index : rfn.getCellIndices()) {
-        locals[index] = new Cell(locals[index]);
-      }
-
-      // Check recursion
-      if (!thread.isRecursionAllowed() && thread.isRecursiveCall(owner)) {
-        throw Starlark.errorf("function '%s' called recursively", owner.getName());
-      }
-
-      Frame fr = thread.frame(0);
-      fr.locals = locals;
-      Object returnValue = Eval.execFunctionBody(fr, rfn.getBody());
-
-      // Return value dynamic type check, if enabled.
-      if (functionType != null) {
-        if (!TypeChecker.isValueSubtypeOf(returnValue, functionType.getReturnType())) {
-          throw Starlark.errorf(
-              "%s(): returns value of type '%s', declares '%s'",
-              owner.getName(), Starlark.getStarlarkType(returnValue), functionType.getReturnType());
-        }
-      }
-
-      return returnValue;
+      // StarlarkFunction objects should not be called for execution. The Truffle-based interpreter
+      // uses StarlarkTruffleFunction for execution. If this code is reached, it means a wrapper
+      // StarlarkFunction (created via toStarlarkFunction()) was incorrectly called instead of the
+      // original StarlarkTruffleFunction.
+      throw new IllegalStateException(
+          "StarlarkFunction.call() should not be invoked; "
+              + "use StarlarkTruffleFunction for execution. "
+              + "Function: " + owner.getName());
     }
   }
 }

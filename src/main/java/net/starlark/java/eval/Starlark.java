@@ -44,7 +44,6 @@ import net.starlark.java.syntax.Expression;
 import net.starlark.java.syntax.FileOptions;
 import net.starlark.java.syntax.ParserInput;
 import net.starlark.java.syntax.Program;
-import net.starlark.java.syntax.Resolver;
 import net.starlark.java.syntax.StarlarkFile;
 import net.starlark.java.syntax.StarlarkType;
 import net.starlark.java.syntax.SyntaxError;
@@ -1033,6 +1032,28 @@ public final class Starlark {
   }
 
   /**
+   * Creates a new {@link UncheckedEvalException} wrapping the given cause.
+   *
+   * <p>Package-private so that {@link StarlarkTruffleAccessor} can replicate the same exception
+   * wrapping as {@link #positionalOnlyCall} without depending on the private constructor of the
+   * inner class.
+   */
+  static UncheckedEvalException newUncheckedEvalException(
+      RuntimeException cause, StarlarkThread thread) {
+    return new UncheckedEvalException(cause, thread);
+  }
+
+  /**
+   * Creates a new {@link UncheckedEvalError} wrapping the given cause.
+   *
+   * <p>Package-private so that {@link StarlarkTruffleAccessor} can replicate the same error
+   * wrapping as {@link #positionalOnlyCall}.
+   */
+  static UncheckedEvalError newUncheckedEvalError(Error cause, StarlarkThread thread) {
+    return new UncheckedEvalError(cause, thread);
+  }
+
+  /**
    * Returns a new EvalException with no location and an error message produced by Java-style string
    * formatting ({@code String.format(format, args)}). Use {@code errorf("%s", msg)} to produce an
    * error message from a non-constant expression {@code msg}.
@@ -1266,78 +1287,13 @@ public final class Starlark {
    * StarlarkThread. On success it returns None, unless the file's final statement is an expression,
    * in which case its value is returned.
    *
+   * <p>Uses reflection to call TruffleIntegration to avoid a compile-time dependency between eval/
+   * and eval/truffle/.
+   *
    * @throws EvalException if there was a (dynamic) evaluation error.
    * @throws InterruptedException if the Java thread was interrupted during evaluation.
    */
   public static Object execFileProgram(Program prog, Module module, StarlarkThread thread)
-      throws EvalException, InterruptedException {
-    // Dispatch to Truffle interpreter if enabled and available on the classpath.
-    if (thread.getSemantics().getBool(StarlarkSemantics.USE_TRUFFLE_INTERPRETER)
-        && isTruffleAvailable()) {
-      return execFileProgramTruffle(prog, module, thread);
-    }
-
-    Resolver.Function rfn = prog.getResolvedFunction();
-
-    // A given Module may be passed to execFileProgram multiple times in sequence,
-    // for different compiled Programs. (This happens in the REPL, and in
-    // EvaluationTestCase scenarios. It is not true of the go.starlark.net
-    // implementation, and it complicates things significantly.
-    // It would be nice to stop doing that.)
-    //
-    // Therefore StarlarkFunctions from different Programs (files) but initializing
-    // the same Module need different mappings from the Program's numbering of
-    // globals to the Module's numbering of globals, and to access a global requires
-    // two array lookups.
-    int[] globalIndex = module.getIndicesOfGlobals(rfn.getGlobals());
-
-    if (module.getDocumentation() == null) {
-      String documentation = rfn.getDocumentation();
-      if (documentation != null) {
-        module.setDocumentation(Starlark.trimDocString(documentation));
-      }
-    }
-
-    StarlarkFunction toplevel =
-        new StarlarkFunction(
-            rfn,
-            module,
-            globalIndex,
-            /* defaultValues= */ Tuple.empty(),
-            /* freevars= */ Tuple.empty(),
-            thread.getNextIdentityToken());
-    return Starlark.positionalOnlyCall(thread, toplevel);
-  }
-
-  // Cached result of checking whether the Truffle interpreter classes are on the classpath.
-  // 0 = unchecked, 1 = available, -1 = unavailable.
-  private static volatile int truffleAvailability;
-
-  /** Returns true if the Truffle interpreter classes are on the classpath. */
-  private static boolean isTruffleAvailable() {
-    int avail = truffleAvailability;
-    if (avail == 0) {
-      try {
-        Class.forName("net.starlark.java.eval.truffle.TruffleIntegration");
-        truffleAvailability = 1;
-        return true;
-      } catch (ClassNotFoundException e) {
-        truffleAvailability = -1;
-        return false;
-      }
-    }
-    return avail > 0;
-  }
-
-  /**
-   * Executes a compiled Starlark program using the Truffle-based interpreter. This method is called
-   * when the USE_TRUFFLE_INTERPRETER semantics flag is enabled.
-   *
-   * <p>Uses reflection to call TruffleIntegration to avoid a circular dependency between eval/ and
-   * eval/truffle/.
-   */
-  private static Object execFileProgramTruffle(
-      Program prog, Module module, StarlarkThread thread)
       throws EvalException, InterruptedException {
     try {
       Class<?> truffleIntegration =
@@ -1353,6 +1309,12 @@ public final class Starlark {
       }
       if (cause instanceof InterruptedException) {
         throw (InterruptedException) cause;
+      }
+      if (cause instanceof RuntimeException re) {
+        throw re;
+      }
+      if (cause instanceof Error e2) {
+        throw e2;
       }
       throw new EvalException("Truffle execution error: " + cause.getMessage(), cause);
     } catch (ReflectiveOperationException e) {
@@ -1374,8 +1336,9 @@ public final class Starlark {
   public static Object eval(
       ParserInput input, FileOptions options, Module module, StarlarkThread thread)
       throws SyntaxError.Exception, EvalException, InterruptedException {
-    StarlarkFunction fn = newExprFunction(input, options, module, thread.getNextIdentityToken());
-    return Starlark.positionalOnlyCall(thread, fn);
+    Expression expr = Expression.parse(input);
+    Program prog = Program.compileExpr(expr, module, options);
+    return execFileProgram(prog, module, thread);
   }
 
   /** Variant of {@link #eval} that creates a module for the given predeclared environment. */
@@ -1388,32 +1351,6 @@ public final class Starlark {
       throws SyntaxError.Exception, EvalException, InterruptedException {
     Module module = Module.withPredeclared(thread.getSemantics(), predeclared);
     return eval(input, options, module, thread);
-  }
-
-  /**
-   * Parses the input as an expression, resolves it in the specified module environment, and returns
-   * a callable no-argument Starlark function value that computes and returns the value of the
-   * expression.
-   *
-   * @throws SyntaxError.Exception if there were scanner, parser, or resolver errors.
-   */
-  private static StarlarkFunction newExprFunction(
-      ParserInput input,
-      FileOptions options,
-      Module module,
-      SymbolGenerator.Symbol<?> referenceIdentity)
-      throws SyntaxError.Exception {
-    Expression expr = Expression.parse(input);
-    Program prog = Program.compileExpr(expr, module, options);
-    Resolver.Function rfn = prog.getResolvedFunction();
-    int[] globalIndex = module.getIndicesOfGlobals(rfn.getGlobals()); // see execFileProgram
-    return new StarlarkFunction(
-        rfn,
-        module,
-        globalIndex,
-        /* defaultValues= */ Tuple.empty(),
-        /* freevars= */ Tuple.empty(),
-        referenceIdentity);
   }
 
   /**

@@ -28,7 +28,7 @@ import net.starlark.java.syntax.Location;
  *
  * <p>After executing the wrapped statement, if {@code thread.postAssignHook != null}, this node
  * calls {@code export()} on function values or {@code postAssignHook.assign()} on other values for
- * each bound identifier. This reproduces the semantics from {@code Eval.java:88-110}.
+ * each bound identifier.
  */
 public final class PostAssignHookNode extends StarlarkStatementNode {
     @Child private StarlarkStatementNode inner;

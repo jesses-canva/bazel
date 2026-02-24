@@ -17,11 +17,18 @@ import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import net.starlark.java.eval.EvalException;
+import net.starlark.java.eval.Starlark;
+import net.starlark.java.eval.StarlarkInt;
 import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.syntax.TokenKind;
 
-/** Unary operation node (e.g., unary minus, unary plus, not, tilde). */
+/**
+ * Unary operation node with inline fast paths for common types.
+ *
+ * <p>The {@code not} operator and integer negation/complement are handled without crossing a {@link
+ * TruffleBoundary}. Other cases fall through to the generic helper.
+ */
 public final class UnaryOpNode extends StarlarkExpressionNode {
 
   @Child private StarlarkExpressionNode operand;
@@ -35,6 +42,22 @@ public final class UnaryOpNode extends StarlarkExpressionNode {
   @Override
   public Object executeGeneric(VirtualFrame frame) {
     Object x = operand.executeGeneric(frame);
+
+    // Fast path for boolean NOT — works for any type via Starlark.truth().
+    if (operator == TokenKind.NOT) {
+      return !Starlark.truth(x);
+    }
+
+    // Fast paths for integer unary operations.
+    if (x instanceof StarlarkInt xi) {
+      switch (operator) {
+        case MINUS: return StarlarkInt.uminus(xi);
+        case PLUS:  return xi;   // unary + is identity for int
+        case TILDE: return StarlarkInt.bitnot(xi);
+        default: break;
+      }
+    }
+
     return doUnaryOp(operator, x);
   }
 

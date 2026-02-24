@@ -19,3 +19,11 @@ def bench_call_dict_get_none(b):
 def bench_call_bool(b):
     for _ in range(b.n):
         bool()
+
+def _identity(x):
+    return x
+
+def bench_call_starlark(b):
+    "Starlark-to-Starlark positional call"
+    for _ in range(b.n):
+        _identity(1)

@@ -15,9 +15,13 @@ package net.starlark.java.eval.truffle.nodes.stmt;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
+import net.starlark.java.eval.EvalException;
+import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkFunction;
+import net.starlark.java.eval.StarlarkSemantics;
 import net.starlark.java.eval.StarlarkThread;
 import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
@@ -25,6 +29,8 @@ import net.starlark.java.eval.truffle.nodes.StarlarkStatementNode;
 import net.starlark.java.eval.truffle.nodes.assign.AssignTargetNode;
 import net.starlark.java.eval.truffle.runtime.StarlarkTruffleFunction;
 import net.starlark.java.syntax.Resolver;
+import net.starlark.java.syntax.StarlarkType;
+import net.starlark.java.syntax.Types;
 
 /** Creates a StarlarkTruffleFunction at runtime and assigns it to a local scope. */
 public final class DefNode extends StarlarkStatementNode {
@@ -65,6 +71,29 @@ public final class DefNode extends StarlarkStatementNode {
 
         // Capture free variables
         Object[] args = frame.getArguments();
+        StarlarkThread thread = (StarlarkThread) args[1];
+
+        // Dynamic type checking for default values, if enabled.
+        if (thread.getSemantics().getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING)
+                && rfn.getFunctionType() instanceof Types.CallableType functionType) {
+            int nparams = rfn.getParameters().size()
+                    - (rfn.hasKwargs() ? 1 : 0)
+                    - (rfn.hasVarargs() ? 1 : 0);
+            int firstDefault = nparams - defaults.length;
+            for (int i = 0; i < defaults.length; i++) {
+                if (defaults[i] == StarlarkFunction.MANDATORY) {
+                    continue;
+                }
+                int paramIndex = firstDefault + i;
+                StarlarkType paramType = functionType.getParameterTypeByPos(paramIndex);
+                if (!StarlarkTruffleAccessor.isValueSubtypeOf(defaults[i], paramType)) {
+                    checkDefaultType(rfn.getName(),
+                            rfn.getParameterNames().get(paramIndex),
+                            defaults[i],
+                            paramType);
+                }
+            }
+        }
         StarlarkFunction.Cell[] freevars = new StarlarkFunction.Cell[freeVarBindingScopes.length];
         for (int i = 0; i < freevars.length; i++) {
             int scope = freeVarBindingScopes[i];
@@ -78,7 +107,6 @@ public final class DefNode extends StarlarkStatementNode {
         }
 
         StarlarkTruffleFunction callee = (StarlarkTruffleFunction) args[0];
-        StarlarkThread thread = (StarlarkThread) args[1];
 
         StarlarkTruffleFunction fn = new StarlarkTruffleFunction(
                 rfn, callee.getModule(), callee.getGlobalIndex(),
@@ -86,5 +114,17 @@ public final class DefNode extends StarlarkStatementNode {
                 thread.getNextIdentityToken());
 
         assignTarget.executeAssign(frame, fn);
+    }
+
+    @TruffleBoundary
+    private static void checkDefaultType(String funcName, String paramName,
+            Object value, StarlarkType paramType) {
+        try {
+            throw Starlark.errorf(
+                    "%s(): parameter '%s' has default value of type '%s', declares '%s'",
+                    funcName, paramName, StarlarkTruffleAccessor.getStarlarkType(value), paramType);
+        } catch (EvalException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

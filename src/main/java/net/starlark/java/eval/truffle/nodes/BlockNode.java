@@ -38,7 +38,17 @@ public final class BlockNode extends StarlarkStatementNode {
     if (CompilerDirectives.inInterpreter()) {
       StarlarkThread thread = (StarlarkThread) frame.getArguments()[1];
       for (StarlarkStatementNode stmt : statements) {
-        incrementAndCheck(thread);
+        // Inline step check: direct field access, no @TruffleBoundary needed.
+        try {
+          StarlarkTruffleAccessor.incrementStepsAndCheck(thread);
+        } catch (EvalException e) {
+          throw new RuntimeException(e);
+        }
+        // Interrupt check: only pay the Thread.interrupted() native-call cost when the
+        // thread is actually interruptible (usually false during Bazel evaluation).
+        if (StarlarkTruffleAccessor.isInterruptible(thread)) {
+          checkInterruptBoundary(thread);
+        }
         stmt.executeVoid(frame);
       }
     } else {
@@ -49,10 +59,10 @@ public final class BlockNode extends StarlarkStatementNode {
   }
 
   @TruffleBoundary
-  private static void incrementAndCheck(StarlarkThread thread) {
+  private static void checkInterruptBoundary(StarlarkThread thread) {
     try {
-      StarlarkTruffleAccessor.incrementStepsAndCheck(thread);
-    } catch (EvalException e) {
+      StarlarkTruffleAccessor.checkInterrupt(thread);
+    } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }

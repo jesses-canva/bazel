@@ -38,6 +38,7 @@ import net.starlark.java.eval.truffle.nodes.assign.AssignUnpackNode;
 import net.starlark.java.eval.truffle.nodes.expr.BinaryOpNode;
 import net.starlark.java.eval.truffle.nodes.expr.CallNode;
 import net.starlark.java.eval.truffle.nodes.expr.ComprehensionBodyNode;
+import net.starlark.java.eval.truffle.nodes.expr.MethodCallNode;
 import net.starlark.java.eval.truffle.nodes.expr.ComprehensionForNode;
 import net.starlark.java.eval.truffle.nodes.expr.ComprehensionIfNode;
 import net.starlark.java.eval.truffle.nodes.expr.ComprehensionNode;
@@ -64,6 +65,7 @@ import net.starlark.java.eval.truffle.nodes.local.ReadPredeclaredNode;
 import net.starlark.java.eval.truffle.nodes.local.ReadUniversalNode;
 import net.starlark.java.eval.truffle.nodes.stmt.AssignmentNode;
 import net.starlark.java.eval.truffle.nodes.stmt.AugmentedAssignmentNode;
+import net.starlark.java.eval.truffle.nodes.stmt.AugmentedIndexAssignmentNode;
 import net.starlark.java.eval.truffle.nodes.stmt.DefNode;
 import net.starlark.java.eval.truffle.nodes.stmt.ExpressionStatementNode;
 import net.starlark.java.eval.truffle.nodes.stmt.FlowNode;
@@ -105,8 +107,8 @@ import net.starlark.java.syntax.UnaryOperatorExpression;
 /**
  * Translates the resolved Starlark syntax AST ({@code syntax.*}) into a Truffle node tree.
  *
- * <p>This is a visitor over the resolved AST ({@link Resolver.Function}), similar to how {@code
- * Eval.java} dispatches on {@link Expression.Kind} and {@link Statement.Kind}.
+ * <p>This is a visitor over the resolved AST ({@link Resolver.Function}), dispatching on {@link
+ * Expression.Kind} and {@link Statement.Kind} to create the corresponding Truffle nodes.
  */
 public final class SyntaxToTruffleTranslator {
 
@@ -413,10 +415,19 @@ public final class SyntaxToTruffleTranslator {
 
   private StarlarkStatementNode translateAugmentedAssignment(AssignmentStatement stmt) {
     Expression lhs = stmt.getLHS();
-    StarlarkExpressionNode lhsExpr = translateExpression(lhs);
     StarlarkExpressionNode rhsExpr = translateExpression(stmt.getRHS());
+    // For index LHS (obj[key] op= rhs), use a specialized node that evaluates obj and key
+    // exactly once, avoiding double side-effect evaluation (e.g., f()[0] += 1 calling f() twice).
+    if (lhs instanceof IndexExpression indexExpr) {
+      StarlarkExpressionNode containerExpr = translateExpression(indexExpr.getObject());
+      StarlarkExpressionNode keyExpr = translateExpression(indexExpr.getKey());
+      return new AugmentedIndexAssignmentNode(
+          containerExpr, keyExpr, rhsExpr, stmt.getOperator(), stmt.getOperatorLocation());
+    }
+    StarlarkExpressionNode lhsExpr = translateExpression(lhs);
     AssignTargetNode target = translateAssignTarget(lhs);
-    return new AugmentedAssignmentNode(lhsExpr, rhsExpr, target, stmt.getOperator());
+    return new AugmentedAssignmentNode(
+        lhsExpr, rhsExpr, target, stmt.getOperator(), stmt.getOperatorLocation());
   }
 
   private StarlarkStatementNode translateExpressionStatement(ExpressionStatement stmt) {
@@ -559,7 +570,7 @@ public final class SyntaxToTruffleTranslator {
     return switch (expr.getOperator()) {
       case AND -> new ShortCircuitAndNode(left, right);
       case OR -> new ShortCircuitOrNode(left, right);
-      default -> new BinaryOpNode(left, right, expr.getOperator());
+      default -> new BinaryOpNode(left, right, expr.getOperator(), expr.getOperatorLocation());
     };
   }
 
@@ -620,8 +631,6 @@ public final class SyntaxToTruffleTranslator {
   }
 
   private StarlarkExpressionNode translateCall(CallExpression call) {
-    StarlarkExpressionNode function = translateExpression(call.getFunction());
-
     List<StarlarkExpressionNode> positionalArgs = new ArrayList<>();
     List<String> namedArgNames = new ArrayList<>();
     List<StarlarkExpressionNode> namedArgValues = new ArrayList<>();
@@ -641,13 +650,35 @@ public final class SyntaxToTruffleTranslator {
       }
     }
 
+    StarlarkExpressionNode[] positionalArray = positionalArgs.toArray(new StarlarkExpressionNode[0]);
+    String[] namedNames = namedArgNames.toArray(new String[0]);
+    StarlarkExpressionNode[] namedValues = namedArgValues.toArray(new StarlarkExpressionNode[0]);
+
+    // If the function expression is a dot-access (receiver.method(args)), emit a fused
+    // MethodCallNode to avoid the intermediate BuiltinFunction allocation.
+    if (call.getFunction() instanceof DotExpression dot) {
+      StarlarkExpressionNode receiverNode = translateExpression(dot.getObject());
+      String methodName = dot.getField().getName();
+      return new MethodCallNode(
+          receiverNode,
+          methodName,
+          positionalArray,
+          namedNames,
+          namedValues,
+          starArg,
+          starStarArg,
+          call.getLparenLocation());
+    }
+
+    StarlarkExpressionNode function = translateExpression(call.getFunction());
     return new CallNode(
         function,
-        positionalArgs.toArray(new StarlarkExpressionNode[0]),
-        namedArgNames.toArray(new String[0]),
-        namedArgValues.toArray(new StarlarkExpressionNode[0]),
+        positionalArray,
+        namedNames,
+        namedValues,
         starArg,
-        starStarArg);
+        starStarArg,
+        call.getLparenLocation());
   }
 
   private StarlarkExpressionNode translateIdentifier(Identifier id) {
@@ -656,7 +687,7 @@ public final class SyntaxToTruffleTranslator {
       case LOCAL -> new ReadLocalNode(bind.getIndex(), id.getName());
       case CELL -> new ReadCellNode(bind.getIndex());
       case FREE -> new ReadFreeNode(bind.getIndex());
-      case GLOBAL -> new ReadGlobalNode(bind.getIndex());
+      case GLOBAL -> new ReadGlobalNode(bind.getIndex(), id.getName());
       case PREDECLARED -> new ReadPredeclaredNode(id.getName());
       case UNIVERSAL -> new ReadUniversalNode(id.getName());
     };
@@ -665,7 +696,7 @@ public final class SyntaxToTruffleTranslator {
   private StarlarkExpressionNode translateIndex(IndexExpression expr) {
     StarlarkExpressionNode object = translateExpression(expr.getObject());
     StarlarkExpressionNode key = translateExpression(expr.getKey());
-    return new IndexNode(object, key);
+    return new IndexNode(object, key, expr.getLbracketLocation());
   }
 
   private StarlarkExpressionNode translateIntLiteral(IntLiteral expr) {

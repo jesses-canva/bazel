@@ -15,17 +15,24 @@ package net.starlark.java.eval.truffle.runtime;
 
 import com.oracle.truffle.api.nodes.ControlFlowException;
 
-/** Thrown by a return statement to unwind to the enclosing function's RootNode. */
+/**
+ * Thrown by a {@code return} statement to unwind to the enclosing function's {@code RootNode}.
+ *
+ * <p>Uses a singleton instance (no payload) to eliminate per-return allocation. The actual return
+ * value is stored on the {@link net.starlark.java.eval.StarlarkThread} via {@link
+ * net.starlark.java.eval.StarlarkTruffleAccessor#setTruffleReturnValue} immediately before this
+ * exception is thrown, and retrieved via {@link
+ * net.starlark.java.eval.StarlarkTruffleAccessor#getTruffleReturnValue} immediately after it is
+ * caught. This is safe because (a) {@code ControlFlowException} disables stack-trace capture,
+ * and (b) the singleton is always caught at the nearest {@code StarlarkRootNode} boundary before
+ * any other Starlark {@code return} can execute on the same thread.
+ */
 public final class StarlarkReturnException extends ControlFlowException {
 
   private static final long serialVersionUID = 1L;
-  private final Object result;
 
-  public StarlarkReturnException(Object result) {
-    this.result = result;
-  }
+  /** Singleton instance. Throw this; read the return value from the thread. */
+  public static final StarlarkReturnException INSTANCE = new StarlarkReturnException();
 
-  public Object getResult() {
-    return result;
-  }
+  private StarlarkReturnException() {}
 }

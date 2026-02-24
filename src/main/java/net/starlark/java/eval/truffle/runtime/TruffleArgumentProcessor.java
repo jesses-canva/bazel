@@ -25,11 +25,14 @@ import net.starlark.java.eval.EvalException;
 import net.starlark.java.eval.Starlark;
 import net.starlark.java.eval.StarlarkCallable;
 import net.starlark.java.eval.StarlarkFunction;
+import net.starlark.java.eval.StarlarkSemantics;
 import net.starlark.java.eval.StarlarkThread;
 import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.Tuple;
 import net.starlark.java.spelling.SpellChecker;
 import net.starlark.java.syntax.Resolver;
+import net.starlark.java.syntax.StarlarkType;
+import net.starlark.java.syntax.Types;
 
 /**
  * Argument processor for Truffle-based Starlark function calls.
@@ -126,8 +129,18 @@ final class TruffleArgumentProcessor extends StarlarkCallable.ArgumentProcessor 
     }
   }
 
-  @Override
-  public Object call(StarlarkThread thread) throws EvalException, InterruptedException {
+  /**
+   * Prepares the Truffle call arguments without executing the function.
+   *
+   * <p>Validates argument counts, binds {@code *args}/{@code **kwargs}, applies defaults,
+   * performs optional dynamic type checking on parameters, and spills shared locals to cells.
+   * Does NOT check recursion (which must happen after the function is pushed onto the call stack)
+   * and does NOT invoke the {@link com.oracle.truffle.api.CallTarget}.
+   *
+   * @return the {@code Object[]} to pass to {@code CallTarget.call()}: {@code [callee, thread,
+   *     locals...]}
+   */
+  Object[] prepareCallArgs(StarlarkThread thread) throws EvalException, InterruptedException {
     int numOrdinaryParams = getNumOrdinaryParameters();
     if (numNonSurplusPositionalArgs > numOrdinaryParams) {
       if (numOrdinaryParams > 0) {
@@ -182,26 +195,80 @@ final class TruffleArgumentProcessor extends StarlarkCallable.ArgumentProcessor 
     // Apply defaults
     applyDefaults();
 
+    // Dynamic type checking for parameter values, if enabled.
+    boolean dynamicTyping =
+        thread.getSemantics().getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING);
+    Types.CallableType functionType =
+        dynamicTyping && owner.getStarlarkType() instanceof Types.CallableType
+            ? (Types.CallableType) owner.getStarlarkType()
+            : null;
+    if (functionType != null) {
+      for (int i = 0; i < functionType.getParameterTypes().size(); i++) {
+        if (locals[i] == null) {
+          continue; // default value is already type checked
+        }
+        StarlarkType parameterType = functionType.getParameterTypeByPos(i);
+        if (!StarlarkTruffleAccessor.isValueSubtypeOf(locals[i], parameterType)) {
+          throw Starlark.errorf(
+              "in call to %s(), parameter '%s' got value of type '%s', want '%s'",
+              owner.getName(),
+              owner.getResolvedFunction().getParameterNames().get(i),
+              StarlarkTruffleAccessor.getStarlarkType(locals[i]),
+              parameterType);
+        }
+      }
+      // TODO(ilist@): typecheck *args and **kwargs, once we have more than primitive types
+    }
+
     // Spill to cells
     for (int index : rfn.getCellIndices()) {
       locals[index] = new StarlarkFunction.Cell(locals[index]);
     }
 
-    // Check for recursion (unless explicitly allowed, e.g. in non-Bazel contexts).
+    // Build args array. Calling convention: [callee, thread, locals...]
+    Object[] args = new Object[locals.length + 2];
+    args[0] = owner;
+    args[1] = thread;
+    System.arraycopy(locals, 0, args, 2, locals.length);
+    return args;
+  }
+
+  @Override
+  public Object call(StarlarkThread thread) throws EvalException, InterruptedException {
+    // At this point, the function has already been pushed onto the call stack by
+    // Starlark.callViaArgumentProcessor, so the recursion check below will correctly detect
+    // recursive calls.
+    Resolver.Function rfn = owner.getResolvedFunction();
     if (!StarlarkTruffleAccessor.isRecursionAllowed(thread)
         && StarlarkTruffleAccessor.isRecursiveCallByCode(thread, rfn)) {
       throw Starlark.errorf("function '%s' called recursively", owner.getName());
     }
 
-    // Execute via Truffle CallTarget
-    // Calling convention: [callee, thread, params...]
-    Object[] args = new Object[locals.length + 2];
-    args[0] = owner;
-    args[1] = thread;
-    System.arraycopy(locals, 0, args, 2, locals.length);
+    Object[] args = prepareCallArgs(thread);
+
+    // Dynamic type checking for return value, if enabled (re-derive functionType).
+    boolean dynamicTyping =
+        thread.getSemantics().getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING);
+    Types.CallableType functionType =
+        dynamicTyping && owner.getStarlarkType() instanceof Types.CallableType
+            ? (Types.CallableType) owner.getStarlarkType()
+            : null;
 
     try {
-      return owner.getCallTarget().call(args);
+      Object returnValue = owner.getCallTarget().call(args);
+
+      // Return value dynamic type check, if enabled.
+      if (functionType != null) {
+        if (!StarlarkTruffleAccessor.isValueSubtypeOf(returnValue, functionType.getReturnType())) {
+          throw Starlark.errorf(
+              "%s(): returns value of type '%s', declares '%s'",
+              owner.getName(),
+              StarlarkTruffleAccessor.getStarlarkType(returnValue),
+              functionType.getReturnType());
+        }
+      }
+
+      return returnValue;
     } catch (RuntimeException e) {
       if (e.getCause() instanceof EvalException) {
         throw (EvalException) e.getCause();

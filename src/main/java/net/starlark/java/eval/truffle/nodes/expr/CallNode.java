@@ -13,6 +13,7 @@
 // limitations under the License.
 package net.starlark.java.eval.truffle.nodes.expr;
 
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
@@ -25,6 +26,8 @@ import net.starlark.java.eval.StarlarkIterable;
 import net.starlark.java.eval.StarlarkThread;
 import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
+import net.starlark.java.eval.truffle.runtime.StarlarkTruffleFunction;
+import net.starlark.java.syntax.Location;
 
 /**
  * A function call node. Evaluates the callee and arguments, then dispatches the call via the
@@ -32,14 +35,19 @@ import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
  */
 public final class CallNode extends StarlarkExpressionNode {
 
+  /** Shared empty array for zero-argument calls; avoids {@code new Object[0]} per call. */
+  private static final Object[] NO_ARGS = new Object[0];
+
   @Child private StarlarkExpressionNode function;
   @Children private final StarlarkExpressionNode[] positionalArgs;
   @Children private final StarlarkExpressionNode[] namedArgValues;
-  @com.oracle.truffle.api.CompilerDirectives.CompilationFinal(dimensions = 1)
+  @CompilationFinal(dimensions = 1)
   private final String[] namedArgNames;
   @Child @Nullable private StarlarkExpressionNode starArg;
   @Child @Nullable private StarlarkExpressionNode starStarArg;
   @Child private DispatchNode dispatchNode = new DispatchNode();
+  /** Location of the opening parenthesis '(' of this call expression. */
+  @CompilationFinal @Nullable private final Location lparenLocation;
 
   public CallNode(
       StarlarkExpressionNode function,
@@ -47,13 +55,15 @@ public final class CallNode extends StarlarkExpressionNode {
       String[] namedArgNames,
       StarlarkExpressionNode[] namedArgValues,
       @Nullable StarlarkExpressionNode starArg,
-      @Nullable StarlarkExpressionNode starStarArg) {
+      @Nullable StarlarkExpressionNode starStarArg,
+      @Nullable Location lparenLocation) {
     this.function = function;
     this.positionalArgs = positionalArgs;
     this.namedArgNames = namedArgNames;
     this.namedArgValues = namedArgValues;
     this.starArg = starArg;
     this.starStarArg = starStarArg;
+    this.lparenLocation = lparenLocation;
   }
 
   @Override
@@ -64,15 +74,70 @@ public final class CallNode extends StarlarkExpressionNode {
 
     // Fast path: positional-only, no star/starstar — uses inline-cached dispatch
     if (namedArgNames.length == 0 && starArg == null && starStarArg == null) {
+      if (positionalArgs.length == 0) {
+        // Update the calling frame's PC to this call's '(' so stack traces show the call site.
+        StarlarkTruffleAccessor.setCurrentLocation(thread, lparenLocation);
+        // Snapshot current frame slot values so Debug.getCallStack sees up-to-date locals.
+        snapshotCurrentLocals(thread, frame);
+        return dispatchNode.dispatch(thread, fn, NO_ARGS);
+      }
+      if (positionalArgs.length == 1) {
+        // Single-arg fast path: pass the argument directly, avoiding an Object[1] allocation.
+        Object arg0 = positionalArgs[0].executeGeneric(frame);
+        StarlarkTruffleAccessor.setCurrentLocation(thread, lparenLocation);
+        snapshotCurrentLocals(thread, frame);
+        return dispatchNode.dispatchSingle(thread, fn, arg0);
+      }
       Object[] positional = new Object[positionalArgs.length];
       for (int i = 0; i < positionalArgs.length; i++) {
         positional[i] = positionalArgs[i].executeGeneric(frame);
       }
+      StarlarkTruffleAccessor.setCurrentLocation(thread, lparenLocation);
+      snapshotCurrentLocals(thread, frame);
       return dispatchNode.dispatch(thread, fn, positional);
     }
 
     // General path (named args, *args, **kwargs)
+    // Update calling frame location and snapshot locals before the call.
+    StarlarkTruffleAccessor.setCurrentLocation(thread, lparenLocation);
+    snapshotCurrentLocals(thread, frame);
     return doGeneralCall(frame, thread, fn);
+  }
+
+  /**
+   * Reads the current values of all local variables from their Truffle frame slots and snapshots
+   * them into the topmost {@link StarlarkThread.Frame} so that {@link Debug#getCallStack} sees
+   * up-to-date values (not stale initial-argument values from {@code frame.getArguments()}).
+   *
+   * <p>Fills the pre-allocated locals array installed by {@link
+   * StarlarkTruffleAccessor#pushCallStack} in-place, avoiding a per-call {@code Object[]}
+   * allocation in the hot path. Falls back to a fresh allocation when the pre-allocated array is
+   * absent or has the wrong size (e.g. on the very first call before push has run).
+   */
+  @TruffleBoundary
+  private static void snapshotCurrentLocals(StarlarkThread thread, VirtualFrame frame) {
+    Object callee0 = frame.getArguments()[0];
+    if (!(callee0 instanceof StarlarkTruffleFunction stf)) {
+      return;
+    }
+    int numLocals = stf.getResolvedFunction().getLocals().size();
+    if (numLocals == 0) {
+      return;
+    }
+    // Try to fill the pre-allocated locals array in-place (avoids allocation on hot path).
+    Object[] dest = StarlarkTruffleAccessor.getPreallocatedFrameLocals(thread);
+    if (dest != null && dest.length == numLocals) {
+      for (int i = 0; i < numLocals; i++) {
+        dest[i] = frame.getObject(i);
+      }
+    } else {
+      // Fallback: allocate a fresh array (should only happen when push hasn't run yet).
+      Object[] locals = new Object[numLocals];
+      for (int i = 0; i < numLocals; i++) {
+        locals[i] = frame.getObject(i);
+      }
+      StarlarkTruffleAccessor.snapshotLocalsToFrame(thread, locals);
+    }
   }
 
   @TruffleBoundary

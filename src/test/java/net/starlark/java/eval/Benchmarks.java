@@ -411,23 +411,7 @@ for example 'bench_int.star:bench_add32'.
     }
   }
 
-  private static final StarlarkSemantics semantics;
-
-  static {
-    // Allow explicit control of the Truffle interpreter via system property.
-    // If the property is set, use its value; otherwise use the default from StarlarkSemantics.
-    String truffleProp =
-        System.getProperty("net.starlark.java.eval.Benchmarks.useTruffleInterpreter");
-    if (truffleProp != null) {
-      boolean useTruffle = Boolean.parseBoolean(truffleProp);
-      semantics =
-          StarlarkSemantics.builder()
-              .setBool(StarlarkSemantics.USE_TRUFFLE_INTERPRETER, useTruffle)
-              .build();
-    } else {
-      semantics = StarlarkSemantics.DEFAULT;
-    }
-  }
+  private static final StarlarkSemantics semantics = StarlarkSemantics.DEFAULT;
 
   private Benchmarks() {}
 }

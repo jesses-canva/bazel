@@ -282,11 +282,4 @@ public class StarlarkSemantics {
 
   /** Globally Override fail(stack_trace=) to true. Flag default is false. */
   public static final String FORCE_STARLARK_STACK_TRACE = "-force_starlark_stack_trace";
-
-  /**
-   * Whether to use the Truffle-based interpreter instead of the tree-walking interpreter. When
-   * enabled, Starlark evaluation is performed via Truffle AST nodes, enabling JIT compilation on
-   * GraalVM.
-   */
-  public static final String USE_TRUFFLE_INTERPRETER = "+use_truffle_interpreter";
 }

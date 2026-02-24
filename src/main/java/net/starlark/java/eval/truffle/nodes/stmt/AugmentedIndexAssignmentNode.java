@@ -18,63 +18,58 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import javax.annotation.Nullable;
 import net.starlark.java.eval.EvalException;
-import net.starlark.java.eval.StarlarkInt;
 import net.starlark.java.eval.StarlarkThread;
 import net.starlark.java.eval.StarlarkTruffleAccessor;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.eval.truffle.nodes.StarlarkStatementNode;
-import net.starlark.java.eval.truffle.nodes.assign.AssignTargetNode;
 import net.starlark.java.syntax.Location;
 import net.starlark.java.syntax.TokenKind;
 
-/** Implements an augmented assignment statement: {@code x += y}, {@code x -= y}, etc. */
-public final class AugmentedAssignmentNode extends StarlarkStatementNode {
-    @Child private StarlarkExpressionNode lhs;
-    @Child private StarlarkExpressionNode rhs;
-    @Child private AssignTargetNode target;
+/**
+ * Augmented assignment where the LHS is an index expression: {@code obj[key] op= rhs}.
+ *
+ * <p>Evaluates {@code obj} and {@code key} exactly once, reads the old value, applies the
+ * operator, and writes back. This avoids the double-evaluation problem of using a separate
+ * {@link AugmentedAssignmentNode} + {@link net.starlark.java.eval.truffle.nodes.assign.AssignIndexNode}.
+ */
+public final class AugmentedIndexAssignmentNode extends StarlarkStatementNode {
+    @Child private StarlarkExpressionNode containerExpr;
+    @Child private StarlarkExpressionNode keyExpr;
+    @Child private StarlarkExpressionNode rhsExpr;
     @CompilationFinal private final TokenKind operator;
     /** Location of the operator token (e.g. '+='), for accurate error reporting. */
     @CompilationFinal @Nullable private final Location operatorLocation;
 
-    public AugmentedAssignmentNode(
-            StarlarkExpressionNode lhs, StarlarkExpressionNode rhs,
-            AssignTargetNode target, TokenKind operator, @Nullable Location operatorLocation) {
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.target = target;
+    public AugmentedIndexAssignmentNode(
+            StarlarkExpressionNode containerExpr,
+            StarlarkExpressionNode keyExpr,
+            StarlarkExpressionNode rhsExpr,
+            TokenKind operator,
+            @Nullable Location operatorLocation) {
+        this.containerExpr = containerExpr;
+        this.keyExpr = keyExpr;
+        this.rhsExpr = rhsExpr;
         this.operator = operator;
         this.operatorLocation = operatorLocation;
     }
 
     @Override
     public void executeVoid(VirtualFrame frame) {
-        Object x = lhs.executeGeneric(frame);
-        Object y = rhs.executeGeneric(frame);
-        Object[] args = frame.getArguments();
-        StarlarkThread thread = (StarlarkThread) args[1];
+        StarlarkThread thread = (StarlarkThread) frame.getArguments()[1];
+        Object container = containerExpr.executeGeneric(frame);
+        Object key = keyExpr.executeGeneric(frame);
+        Object rhs = rhsExpr.executeGeneric(frame);
         StarlarkTruffleAccessor.setErrorLocation(thread, operatorLocation);
-
-        // Fast path: integer arithmetic (avoids @TruffleBoundary for the hot i += 1 pattern).
-        if (x instanceof StarlarkInt xi && y instanceof StarlarkInt yi) {
-            Object result;
-            switch (operator) {
-                case PLUS:  result = StarlarkInt.add(xi, yi); break;
-                case MINUS: result = StarlarkInt.subtract(xi, yi); break;
-                case STAR:  result = StarlarkInt.multiply(xi, yi); break;
-                default:    result = doBinaryOp(operator, x, y, thread); break;
-            }
-            target.executeAssign(frame, result);
-            return;
-        }
-
-        Object result = doBinaryOp(operator, x, y, thread);
-        target.executeAssign(frame, result);
+        doAugmentedIndex(operator, container, key, rhs, thread);
     }
 
     @TruffleBoundary
-    private static Object doBinaryOp(TokenKind op, Object x, Object y, StarlarkThread thread) {
+    private static void doAugmentedIndex(
+            TokenKind op, Object container, Object key, Object rhs, StarlarkThread thread) {
         try {
-            return StarlarkTruffleAccessor.inplaceBinaryOp(op, x, y, thread);
+            Object oldValue = StarlarkTruffleAccessor.index(thread, container, key);
+            Object newValue = StarlarkTruffleAccessor.inplaceBinaryOp(op, oldValue, rhs, thread);
+            StarlarkTruffleAccessor.setIndex(container, key, newValue);
         } catch (EvalException e) {
             throw new RuntimeException(e);
         }

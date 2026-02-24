@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.starlark.java.syntax.Location;
+import net.starlark.java.syntax.Resolver;
 import net.starlark.java.syntax.Resolver.Binding;
 import net.starlark.java.syntax.Resolver.ComprehensionBinding;
 
@@ -75,9 +76,7 @@ public final class StarlarkThread {
 
   /**
    * Returns the number of Starlark computation steps executed by this thread according to a
-   * small-step semantics. (Today, that means exec, eval, and assign operations executed by the
-   * tree-walking evaluator, but in future will mean byte code instructions; the two are not
-   * commensurable.)
+   * small-step semantics.
    */
   public long getExecutedSteps() {
     return steps;
@@ -125,6 +124,11 @@ public final class StarlarkThread {
     }
   }
 
+  /** Returns whether this thread responds to {@link Thread#interrupt}. */
+  boolean isInterruptible() {
+    return interruptible;
+  }
+
   /**
    * setThreadLocal saves {@code value} as a thread-local variable of this Starlark thread, keyed by
    * {@code key}, so that it can later be retrieved by {@code getThreadLocal(key)}.
@@ -149,8 +153,6 @@ public final class StarlarkThread {
 
     @Nullable
     final Debug.Debugger dbg = Debug.debugger.get(); // the debugger, if active for this frame
-
-    Object result = Starlark.NONE; // the operand of a Starlark return statement
 
     // Current PC location. Initially fn.getLocation(); for Starlark functions,
     // it is updated at key points when it may be observed: calls, breakpoints, errors.
@@ -205,14 +207,16 @@ public final class StarlarkThread {
     public ImmutableMap<String, Object> getLocals() {
       // TODO(adonovan): provide a more efficient API.
       ImmutableMap.Builder<String, Object> env = ImmutableMap.builder();
-      if (fn instanceof StarlarkFunction) {
+      // Use fn.getResolvedFunction() to support both StarlarkFunction and StarlarkTruffleFunction.
+      Resolver.Function rfn = fn.getResolvedFunction();
+      if (rfn != null && locals != null) {
         for (int i = 0; i < locals.length; i++) {
           Object local = locals[i];
           if (local instanceof StarlarkFunction.Cell) {
             local = ((StarlarkFunction.Cell) local).x;
           }
           if (local != null) {
-            Binding binding = ((StarlarkFunction) fn).rfn.getLocals().get(i);
+            Binding binding = rfn.getLocals().get(i);
             if (binding instanceof ComprehensionBinding comprehensionBinding
                 && !comprehensionBinding.inScope(loc)) {
               // Ignore comprehension variables when outside their comprehension's lexical scope.
@@ -259,6 +263,14 @@ public final class StarlarkThread {
 
   /** A hook for notifications of assignments at top level. */
   PostAssignHook postAssignHook;
+
+  /**
+   * Holds the return value of the most recent Starlark {@code return} statement executed by the
+   * Truffle interpreter. Set by {@code ReturnNode} before throwing the singleton {@code
+   * StarlarkReturnException}; read by {@code StarlarkRootNode} / {@code StarlarkModuleRootNode}
+   * immediately after catching it.
+   */
+  Object truffleReturnValue;
 
   /** Pushes a function onto the call stack. */
   void push(StarlarkCallable fn) {
