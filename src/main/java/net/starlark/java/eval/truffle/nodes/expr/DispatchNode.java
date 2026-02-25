@@ -61,6 +61,12 @@ public final class DispatchNode extends Node {
    */
   @CompilationFinal private boolean cachedFnIsSimple;
 
+  /** Cached number of ordinary parameters for the monomorphic function; set with {@link #cachedFn}. */
+  @CompilationFinal private int cachedNumOrdinaryParams;
+
+  /** Cached total number of locals for the monomorphic function; set with {@link #cachedFn}. */
+  @CompilationFinal private int cachedTotalLocals;
+
   /**
    * Cached {@link BuiltinFunction} for the builtin monomorphic case; null while uninitialized.
    * Used for call sites that always invoke the same builtin (e.g. {@code type(x)}, {@code
@@ -95,6 +101,8 @@ public final class DispatchNode extends Node {
         CompilerDirectives.transferToInterpreterAndInvalidate();
         cachedFn = stf;
         cachedFnIsSimple = stf.isSimplePositionalFunction();
+        cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
+        cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
       }
       if (stf == cachedFn) {
@@ -134,6 +142,8 @@ public final class DispatchNode extends Node {
         CompilerDirectives.transferToInterpreterAndInvalidate();
         cachedFn = stf;
         cachedFnIsSimple = stf.isSimplePositionalFunction();
+        cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
+        cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
       }
       if (stf == cachedFn) {
@@ -181,10 +191,38 @@ public final class DispatchNode extends Node {
 
   /**
    * Single-argument variant of {@link #callDirect}: avoids allocating an intermediate {@code
-   * Object[1]} positional array. Delegates to {@link #prepareArgsBoundarySingle} for argument
-   * preparation.
+   * Object[1]} positional array.
+   *
+   * <p>For "simple" functions with exactly 1 ordinary parameter (the common {@code f(x)} case),
+   * builds the args array directly in PE-visible code. This allows Truffle's partial evaluator to
+   * see the allocation and, when {@link DirectCallNode} inlines the callee, scalar-replace the
+   * array to zero heap bytes. Falls back to {@link #prepareArgsBoundarySingle} for functions with
+   * defaults, complex parameter patterns, or dynamic type checking.
    */
   private Object callDirectSingle(StarlarkThread thread, StarlarkTruffleFunction stf, Object arg0) {
+    if (cachedFnIsSimple && cachedNumOrdinaryParams == 1
+        && !thread
+            .getSemantics()
+            .getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING)) {
+      // Hot path: simple function with exactly 1 param, no type checking, exact arg count match.
+      // Build the args array in PE-visible code so Truffle can scalar-replace it.
+      Object[] args = new Object[cachedTotalLocals + 2];
+      args[0] = stf;
+      args[1] = thread;
+      args[2] = arg0;
+      pushAndCheckRecursionBoundary(thread, stf);
+      try {
+        Object result = directCallNode.call(args);
+        checkReturnTypeBoundary(thread, stf, result);
+        return result;
+      } catch (RuntimeException e) {
+        captureExceptionStackBoundary(thread, e);
+        throw e;
+      } finally {
+        StarlarkTruffleAccessor.popCallStack(thread);
+      }
+    }
+    // Non-simple, defaults needed, or dynamic type checking: use boundary path.
     Object[] args = prepareArgsBoundarySingle(thread, stf, arg0);
     pushAndCheckRecursionBoundary(thread, stf);
     try {

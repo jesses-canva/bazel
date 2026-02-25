@@ -37,23 +37,34 @@ public final class StarlarkRootNode extends RootNode {
 
   @Child private StarlarkStatementNode body;
   @CompilationFinal private final String name;
+  @CompilationFinal private final int numLocals;
 
+  /**
+   * @param numLocals the number of local variables (parameters + body locals) to copy from the
+   *     arguments array into frame slots. This may be less than
+   *     {@code frameDescriptor.getNumberOfSlots()} when the frame has extra slots for for-loop
+   *     iterators or comprehension results.
+   */
   public StarlarkRootNode(
       StarlarkTruffleLanguage language,
       FrameDescriptor frameDescriptor,
       StarlarkStatementNode body,
-      String name) {
+      String name,
+      int numLocals) {
     super(language, frameDescriptor);
     this.body = body;
     this.name = name;
+    this.numLocals = numLocals;
   }
 
   @Override
+  @ExplodeLoop
   public Object execute(VirtualFrame frame) {
     // Copy bound locals from arguments array to frame slots.
     // Calling convention: args[0]=callee, args[1]=thread, args[2..]=locals
+    // @ExplodeLoop unrolls this loop so PE sees individual args[i] reads,
+    // enabling scalar replacement of the args array when inlined.
     Object[] args = frame.getArguments();
-    int numLocals = args.length - 2;
     for (int i = 0; i < numLocals; i++) {
       if (args[i + 2] != null) {
         frame.setObject(i, args[i + 2]);

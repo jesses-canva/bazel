@@ -130,8 +130,9 @@ public final class SyntaxToTruffleTranslator {
   public FrameDescriptor buildFrameDescriptor(Resolver.Function rfn) {
     FrameDescriptor.Builder builder = FrameDescriptor.newBuilder();
     int numLocals = rfn.getLocals().size();
-    // Reserve exactly one extra slot per comprehension (each comprehension needs one result slot).
-    // No safety margin: countComprehensions is an exact count of allocateExtraSlot() calls.
+    // Reserve extra slots for comprehension results (one per comprehension) and for-loop
+    // iterators (one per for statement). countComprehensions is an exact count of
+    // allocateExtraSlot() calls made during translation.
     int extraSlots = countComprehensions(rfn);
     for (int i = 0; i < numLocals + extraSlots; i++) {
       builder.addSlot(FrameSlotKind.Object, null, null);
@@ -174,7 +175,8 @@ public final class SyntaxToTruffleTranslator {
         return count;
       case FOR:
         ForStatement forStmt = (ForStatement) stmt;
-        int forCount = countComprehensionsInExpression(forStmt.getCollection());
+        int forCount = 1; // one extra slot for the LoopNode iterator
+        forCount += countComprehensionsInExpression(forStmt.getCollection());
         for (Statement s : forStmt.getBody()) {
           forCount += countComprehensionsInStatement(s);
         }
@@ -443,7 +445,8 @@ public final class SyntaxToTruffleTranslator {
     StarlarkExpressionNode collection = translateExpression(stmt.getCollection());
     AssignTargetNode variable = translateAssignTarget(stmt.getVars());
     StarlarkStatementNode body = translateBlock(stmt.getBody());
-    return new ForNode(collection, variable, body);
+    int iteratorSlot = allocateExtraSlot();
+    return new ForNode(collection, variable, body, iteratorSlot);
   }
 
   private StarlarkStatementNode translateDef(DefStatement stmt) {
@@ -460,7 +463,7 @@ public final class SyntaxToTruffleTranslator {
 
     StarlarkStatementNode innerBody = innerTranslator.translateBlock(rfn.getBody());
     StarlarkRootNode rootNode =
-        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName());
+        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName(), rfn.getLocals().size());
     CallTarget callTarget = rootNode.getCallTarget();
 
     // Default value expressions
@@ -722,7 +725,7 @@ public final class SyntaxToTruffleTranslator {
 
     StarlarkStatementNode innerBody = innerTranslator.translateBlock(rfn.getBody());
     StarlarkRootNode rootNode =
-        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName());
+        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName(), rfn.getLocals().size());
     CallTarget callTarget = rootNode.getCallTarget();
 
     // For now, return a node that creates the function object at runtime
