@@ -1,0 +1,74 @@
+Bazel 9 compatibility fixes for the rules_graalvm PR-573 commit.
+
+Adds missing load() statements for JavaInfo, CcInfo, and cc_common that
+are required under Bazel 9's stricter symbol-visibility rules. Also
+removes dev_dependency = True from rules_cc so it is available at
+non-development usage.
+
+diff --git a/MODULE.bazel b/MODULE.bazel
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -58,7 +58,6 @@
+ bazel_dep(
+     name = "rules_cc",
+     version = "0.0.9",
+-    dev_dependency = True,
+ )
+ bazel_dep(
+     name = "rules_testing",
+diff --git a/internal/native_image/builder.bzl b/internal/native_image/builder.bzl
+--- a/internal/native_image/builder.bzl
++++ b/internal/native_image/builder.bzl
+@@ -1,5 +1,7 @@
+ "Logic to assemble `native-image` options."
+
++load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
++
+ def _configure_static_zlib_compile(ctx, args, direct_inputs):
+     """Configure a static image compile against hermetic/static zlib.
+
+diff --git a/internal/native_image/classic.bzl b/internal/native_image/classic.bzl
+--- a/internal/native_image/classic.bzl
++++ b/internal/native_image/classic.bzl
+@@ -1,5 +1,7 @@
+ "Legacy ('classic') rules for building with GraalVM on Bazel."
+
++load("@rules_java//java/common:java_info.bzl", "JavaInfo")
++
+ load(
+     "//internal/native_image:common.bzl",
+     _BAZEL_CPP_TOOLCHAIN_TYPE = "BAZEL_CPP_TOOLCHAIN_TYPE",
+diff --git a/internal/native_image/common.bzl b/internal/native_image/common.bzl
+--- a/internal/native_image/common.bzl
++++ b/internal/native_image/common.bzl
+@@ -1,5 +1,8 @@
+ "Defines common properties shared by modern and legacy Native Image rules."
+
++load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
++load("@rules_java//java/common:java_info.bzl", "JavaInfo")
++
+ load(
+     "//internal/native_image:builder.bzl",
+     _assemble_native_build_options = "assemble_native_build_options",
+diff --git a/internal/native_image/rules.bzl b/internal/native_image/rules.bzl
+--- a/internal/native_image/rules.bzl
++++ b/internal/native_image/rules.bzl
+@@ -4,6 +4,7 @@
+     "@build_bazel_apple_support//lib:apple_support.bzl",
+     "apple_support",
+ )
++load("@rules_java//java/common:java_info.bzl", "JavaInfo")
+ load(
+     "//internal/native_image:common.bzl",
+     _BAZEL_CPP_TOOLCHAIN_TYPE = "BAZEL_CPP_TOOLCHAIN_TYPE",
+diff --git a/internal/native_image/toolchain.bzl b/internal/native_image/toolchain.bzl
+--- a/internal/native_image/toolchain.bzl
++++ b/internal/native_image/toolchain.bzl
+@@ -19,6 +19,7 @@
+     "@bazel_tools//tools/cpp:toolchain_utils.bzl",
+     "find_cpp_toolchain",
+ )
++load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+
+ def resolve_cc_toolchain(ctx, transitive_inputs, *, is_windows):
+     """Build a context struct for accessing the native C toolchain.

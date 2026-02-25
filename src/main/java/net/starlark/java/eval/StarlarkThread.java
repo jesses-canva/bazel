@@ -383,7 +383,10 @@ public final class StarlarkThread {
     // reference to this frame (e.g. for inspection after beforeReturn) and
     // could observe stale values after the frame is reused.
     if (fr.dbg == null) {
-      fr.locals = null; // drop locals to avoid retaining stale values
+      // Keep fr.locals alive across recycling. snapshotCurrentLocals in CallNode will
+      // overwrite it on the first outgoing call of the next invocation (hot path: in-place
+      // fill; cold path: allocate new array if numLocals differs). Clearing it here would
+      // force the cold-path allocation on every call to any non-leaf function.
       recycledFrame = fr;
     }
   }

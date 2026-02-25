@@ -42,8 +42,8 @@ def _bazel_build_deps(ctx):
     graalvm_repository(
         name = "graalvm_ce",
         distribution = "ce",
-        java_version = "21",
-        version = "21.0.2",
+        java_version = "25",
+        version = "25.0.2",
     )
     graalvm_repository(
         name = "graalvm_oracle",

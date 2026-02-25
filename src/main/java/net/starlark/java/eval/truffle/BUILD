@@ -6,6 +6,15 @@ java_library(
     name = "truffle",
     srcs = glob(["**/*.java"]),
     visibility = ["//src/main/java/net/starlark/java:clients"],
+    runtime_deps = [
+        # truffle-runtime provides the HotSpotTruffleRuntime that bridges the
+        # Truffle API to GraalVM's JIT compiler for partial evaluation.
+        # Without it, Truffle runs in interpreter-only (DefaultTruffleRuntime) mode.
+        "@maven//:org_graalvm_truffle_truffle_runtime",
+        "@maven//:org_graalvm_truffle_truffle_compiler",
+        "@maven//:org_graalvm_sdk_jniutils",
+        "@maven//:org_graalvm_polyglot_polyglot",
+    ],
     deps = [
         "//src/main/java/net/starlark/java/annot",
         "//src/main/java/net/starlark/java/eval",

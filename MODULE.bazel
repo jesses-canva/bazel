@@ -26,7 +26,7 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "protobuf", version = "33.4", repo_name = "com_google_protobuf")
 bazel_dep(name = "re2", version = "2025-11-05.bcr.1")
 bazel_dep(name = "rules_go", version = "0.59.0")
-bazel_dep(name = "rules_graalvm", version = "0.11.1")
+bazel_dep(name = "rules_graalvm", version = "0.12.0")
 bazel_dep(name = "rules_java", version = "9.5.0")
 bazel_dep(name = "rules_jvm_external", version = "6.6")
 bazel_dep(name = "rules_license", version = "1.0.0")
@@ -68,15 +68,16 @@ single_version_override(
     version = "6.6",
 )
 
-# TODO(pcloudy): Remove once the next version of rules_graalvm is available.
-single_version_override(
+# Use the commit from https://github.com/sgammon/rules_graalvm/pull/573 to get
+# GraalVM JDK 24 and 25 support, pending a new rules_graalvm BCR release.
+archive_override(
     module_name = "rules_graalvm",
+    urls = ["https://github.com/sgammon/rules_graalvm/archive/fc0ab99b8853d2a0c48d28e19b55ffefdd33b57b.tar.gz"],
+    sha256 = "6354fc1a2dcbb7d8acc14c8e830b8d6a762eb30d23c390ac471395ff193ecb76",
+    strip_prefix = "rules_graalvm-fc0ab99b8853d2a0c48d28e19b55ffefdd33b57b",
     patch_strip = 1,
     patches = [
-        "//third_party:rules_graalvm_fix.patch",
-        "//third_party:rules_graalvm_unicode.patch",
-        "//third_party:rules_graalvm_load_fix.patch",
-        "//third_party:rules_graalvm_bazel9_fixes.patch",
+        "//third_party:rules_graalvm_java25_fixes.patch",
     ],
 )
 
@@ -227,12 +228,16 @@ maven.install(
         "org.apache.velocity:velocity:1.7",
         "org.checkerframework:checker-qual:3.49.3",
         "org.commonmark:commonmark:0.25.0",
-        "org.graalvm.sdk:collections:23.1.2",
-        "org.graalvm.sdk:graal-sdk:23.1.2",
-        "org.graalvm.sdk:nativeimage:23.1.2",
-        "org.graalvm.sdk:word:23.1.2",
-        "org.graalvm.truffle:truffle-api:23.1.2",
-        "org.graalvm.truffle:truffle-dsl-processor:23.1.2",
+        "org.graalvm.polyglot:polyglot:25.0.2",
+        "org.graalvm.sdk:collections:25.0.2",
+        "org.graalvm.sdk:graal-sdk:25.0.2",
+        "org.graalvm.sdk:jniutils:25.0.2",
+        "org.graalvm.sdk:nativeimage:25.0.2",
+        "org.graalvm.sdk:word:25.0.2",
+        "org.graalvm.truffle:truffle-api:25.0.2",
+        "org.graalvm.truffle:truffle-compiler:25.0.2",
+        "org.graalvm.truffle:truffle-dsl-processor:25.0.2",
+        "org.graalvm.truffle:truffle-runtime:25.0.2",
         "org.openjdk.jmh:jmh-core:1.37",
         "org.openjdk.jmh:jmh-generator-annprocess:1.37",
         "org.openjdk.jol:jol-core:0.17",
@@ -481,7 +486,7 @@ register_toolchains("//src/main/res:empty_rc_toolchain")
 register_toolchains("@graalvm_ce_toolchains//:gvm")
 
 # Register GraalVM CE as an optional Java runtime toolchain.
-# Selected when --java_runtime_version=graalvm_21 (or --tool_java_runtime_version=graalvm_21)
+# Selected when --java_runtime_version=graalvm_25 (or --tool_java_runtime_version=graalvm_25)
 # is passed; does not interfere with the default remotejdk_25 builds.
 register_toolchains("@graalvm_ce_toolchains//:toolchain")
 register_toolchains("@graalvm_ce_toolchains//:bootstrap_runtime_toolchain")

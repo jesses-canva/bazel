@@ -96,7 +96,10 @@ java_test(
 java_binary(
     name = "Benchmarks",
     data = glob(["testdata/bench_*.star"]),
-    jvm_flags = ["-Dfile.encoding=UTF8"],
+    jvm_flags = [
+        "-Dfile.encoding=UTF8",
+        "--enable-native-access=ALL-UNNAMED",
+    ],
     main_class = "net.starlark.java.eval.Benchmarks",
     runtime_deps = [
         ":Benchmarks_lib",

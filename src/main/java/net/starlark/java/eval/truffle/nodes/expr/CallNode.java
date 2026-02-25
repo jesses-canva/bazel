@@ -13,6 +13,7 @@
 // limitations under the License.
 package net.starlark.java.eval.truffle.nodes.expr;
 
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -109,12 +110,18 @@ public final class CallNode extends StarlarkExpressionNode {
    * them into the topmost {@link StarlarkThread.Frame} so that {@link Debug#getCallStack} sees
    * up-to-date values.
    *
-   * <p>Uses a lazily-allocated locals array stored in the frame (no pre-allocation at push time).
-   * The first snapshot allocates {@code Object[numLocals]} and stores it on the frame; subsequent
-   * snapshots fill the same array in-place. Leaf functions (those that make no outgoing calls)
+   * <p>This method is intentionally <em>not</em> annotated with {@code @TruffleBoundary}: passing
+   * a {@code VirtualFrame} to a {@code @TruffleBoundary} method either forces frame
+   * materialization or prevents the entire calling {@code executeGeneric} from being compiled by
+   * PE. The {@code frame.getObject(i)} reads are PE-native. The cold path (allocation) is guarded
+   * by {@link CompilerDirectives#transferToInterpreterAndInvalidate()} so it is never reached in
+   * compiled code.
+   *
+   * <p>Uses a lazily-allocated locals array stored in the frame. The first outgoing call for this
+   * frame invocation triggers the cold path once (deoptimizing and recompiling); subsequent calls
+   * use the already-allocated array in-place. Leaf functions (those that make no outgoing calls)
    * never trigger this method, so their frame's locals array is never allocated.
    */
-  @TruffleBoundary
   private static void snapshotCurrentLocals(StarlarkThread thread, VirtualFrame frame) {
     Object callee0 = frame.getArguments()[0];
     if (!(callee0 instanceof StarlarkTruffleFunction stf)) {
@@ -124,15 +131,16 @@ public final class CallNode extends StarlarkExpressionNode {
     if (numLocals == 0) {
       return;
     }
-    // Use the cached locals array if already allocated; allocate and cache on first call.
+    // Hot path: fill the existing array in-place (no allocation).
     Object[] dest = StarlarkTruffleAccessor.getPreallocatedFrameLocals(thread);
     if (dest != null && dest.length == numLocals) {
-      // Fill the existing array in-place (no allocation).
       for (int i = 0; i < numLocals; i++) {
         dest[i] = frame.getObject(i);
       }
     } else {
-      // First call for this frame invocation: allocate and cache for future calls.
+      // Cold path: allocate and cache the locals array for future calls.
+      // Deoptimize so this path is not inlined into compiled code.
+      CompilerDirectives.transferToInterpreterAndInvalidate();
       Object[] locals = new Object[numLocals];
       for (int i = 0; i < numLocals; i++) {
         locals[i] = frame.getObject(i);
