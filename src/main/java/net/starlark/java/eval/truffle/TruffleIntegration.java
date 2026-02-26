@@ -14,7 +14,9 @@
 package net.starlark.java.eval.truffle;
 
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.impl.DefaultTruffleRuntime;
 import net.starlark.java.eval.EvalException;
 import net.starlark.java.eval.Module;
 import net.starlark.java.eval.Starlark;
@@ -34,6 +36,19 @@ import net.starlark.java.syntax.Resolver;
  * resolved AST to Truffle nodes and executes them.
  */
 public final class TruffleIntegration {
+
+  static {
+    // Verify that the Truffle JIT compiler is available. If the runtime is
+    // DefaultTruffleRuntime, Truffle is running in interpreter-only mode — defeating the
+    // purpose of the Truffle-based Starlark interpreter.
+    if (Truffle.getRuntime() instanceof DefaultTruffleRuntime defaultRuntime) {
+      throw new IllegalStateException(
+          "Starlark Truffle interpreter requires JIT compilation support, but Truffle is "
+              + "running in interpreter-only mode (DefaultTruffleRuntime). Reason: "
+              + defaultRuntime.getFallbackReason()
+              + ". Ensure Bazel is running on GraalVM with the Truffle compiler on the module path.");
+    }
+  }
 
   private TruffleIntegration() {} // uninstantiable
 
