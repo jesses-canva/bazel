@@ -1,4 +1,5 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 package(default_testonly = 1)
 
@@ -93,6 +94,11 @@ java_test(
 )
 
 # Script-based benchmarks of the Starlark interpreter.
+# To enable Truffle JIT compilation, run with:
+#   bazel run :Benchmarks -- --jvm_flag=--module-path=<truffle-jars> \
+#     --jvm_flag=--add-modules=org.graalvm.truffle.runtime,org.graalvm.truffle.compiler \
+#     --jvm_flag=-XX:+UnlockExperimentalVMOptions --jvm_flag=-XX:+EnableJVMCI
+# Or use the :BenchmarksJIT target which configures module-path automatically.
 java_binary(
     name = "Benchmarks",
     data = glob(["testdata/bench_*.star"]),
@@ -104,6 +110,27 @@ java_binary(
     runtime_deps = [
         ":Benchmarks_lib",
         "//src/main/java/net/starlark/java/eval/truffle",
+    ],
+)
+
+# Benchmark binary with Truffle JIT compilation enabled.
+# The Truffle runtime must be loaded as a named module for JVMCI access;
+# this target configures --module-path and --add-modules accordingly.
+sh_binary(
+    name = "BenchmarksJIT",
+    srcs = ["benchmarks_jit.sh"],
+    data = [
+        ":Benchmarks",
+        "@maven//:org_graalvm_compiler_compiler",
+        "@maven//:org_graalvm_polyglot_polyglot",
+        "@maven//:org_graalvm_sdk_collections",
+        "@maven//:org_graalvm_sdk_graal_sdk",
+        "@maven//:org_graalvm_sdk_jniutils",
+        "@maven//:org_graalvm_sdk_nativeimage",
+        "@maven//:org_graalvm_sdk_word",
+        "@maven//:org_graalvm_truffle_truffle_api",
+        "@maven//:org_graalvm_truffle_truffle_compiler",
+        "@maven//:org_graalvm_truffle_truffle_runtime",
     ],
 )
 

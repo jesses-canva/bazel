@@ -228,6 +228,7 @@ maven.install(
         "org.apache.velocity:velocity:1.7",
         "org.checkerframework:checker-qual:3.49.3",
         "org.commonmark:commonmark:0.25.0",
+        "org.graalvm.compiler:compiler:25.0.2",
         "org.graalvm.polyglot:polyglot:25.0.2",
         "org.graalvm.sdk:collections:25.0.2",
         "org.graalvm.sdk:graal-sdk:25.0.2",

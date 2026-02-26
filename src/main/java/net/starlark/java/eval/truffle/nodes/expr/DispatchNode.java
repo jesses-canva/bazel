@@ -68,6 +68,14 @@ public final class DispatchNode extends Node {
   @CompilationFinal private int cachedTotalLocals;
 
   /**
+   * Pre-allocated args array for the monomorphic single-argument fast path. Reused across calls to
+   * avoid per-call {@code Object[]} allocation. Safe because Starlark evaluation is single-threaded
+   * per {@link StarlarkThread} and recursion is checked before the call. Initialized with
+   * {@link #cachedFn}.
+   */
+  @CompilationFinal @Nullable private Object[] cachedSingleArgs;
+
+  /**
    * Cached {@link BuiltinFunction} for the builtin monomorphic case; null while uninitialized.
    * Used for call sites that always invoke the same builtin (e.g. {@code type(x)}, {@code
    * len(x)}).
@@ -103,6 +111,7 @@ public final class DispatchNode extends Node {
         cachedFnIsSimple = stf.isSimplePositionalFunction();
         cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
         cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
+        cachedSingleArgs = new Object[cachedTotalLocals + 2];
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
       }
       if (stf == cachedFn) {
@@ -144,6 +153,7 @@ public final class DispatchNode extends Node {
         cachedFnIsSimple = stf.isSimplePositionalFunction();
         cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
         cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
+        cachedSingleArgs = new Object[cachedTotalLocals + 2];
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
       }
       if (stf == cachedFn) {
@@ -194,10 +204,13 @@ public final class DispatchNode extends Node {
    * Object[1]} positional array.
    *
    * <p>For "simple" functions with exactly 1 ordinary parameter (the common {@code f(x)} case),
-   * builds the args array directly in PE-visible code. This allows Truffle's partial evaluator to
-   * see the allocation and, when {@link DirectCallNode} inlines the callee, scalar-replace the
-   * array to zero heap bytes. Falls back to {@link #prepareArgsBoundarySingle} for functions with
-   * defaults, complex parameter patterns, or dynamic type checking.
+   * reuses the pre-allocated {@link #cachedSingleArgs} array, filling slots [0]=callee,
+   * [1]=thread, [2]=arg0. This eliminates per-call {@code Object[]} allocation entirely. Safe
+   * because Starlark is single-threaded per {@link StarlarkThread} and the callee's prologue
+   * ({@link net.starlark.java.eval.truffle.nodes.StarlarkRootNode#execute}) copies args to frame
+   * slots before any nested call could reuse this array. Falls back to {@link
+   * #prepareArgsBoundarySingle} for functions with defaults, complex parameter patterns, or
+   * dynamic type checking.
    */
   private Object callDirectSingle(StarlarkThread thread, StarlarkTruffleFunction stf, Object arg0) {
     if (cachedFnIsSimple && cachedNumOrdinaryParams == 1
@@ -205,8 +218,10 @@ public final class DispatchNode extends Node {
             .getSemantics()
             .getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING)) {
       // Hot path: simple function with exactly 1 param, no type checking, exact arg count match.
-      // Build the args array in PE-visible code so Truffle can scalar-replace it.
-      Object[] args = new Object[cachedTotalLocals + 2];
+      // Reuse the pre-allocated args array to avoid per-call Object[] allocation.
+      // Safe: Starlark is single-threaded per StarlarkThread, and StarlarkRootNode.execute()
+      // copies args to frame slots in its prologue before any nested call could reuse this array.
+      Object[] args = cachedSingleArgs;
       args[0] = stf;
       args[1] = thread;
       args[2] = arg0;
