@@ -68,10 +68,13 @@ public final class DispatchNode extends Node {
   @CompilationFinal private int cachedTotalLocals;
 
   /**
-   * Pre-allocated args array for the monomorphic single-argument fast path. Reused across calls to
-   * avoid per-call {@code Object[]} allocation. Safe because Starlark evaluation is single-threaded
-   * per {@link StarlarkThread} and recursion is checked before the call. Initialized with
-   * {@link #cachedFn}.
+   * Pre-allocated args array for the monomorphic single-argument fast path. Currently unused
+   * (retained for potential future per-thread optimization). The previous reuse across calls was
+   * unsafe because Bazel shares Truffle ASTs across Skyframe threads via imported functions:
+   * {@code frame.getArguments()} returns a reference (not a copy) to this array, so concurrent
+   * callers on different threads would corrupt each other's callee/thread/arg values, leading to
+   * cross-thread call-stack corruption ({@code IndexOutOfBoundsException} in {@code pop()},
+   * false-positive recursion detection, and wrong-module lookups).
    */
   @CompilationFinal @Nullable private Object[] cachedSingleArgs;
 
@@ -106,16 +109,21 @@ public final class DispatchNode extends Node {
     if (fn instanceof StarlarkTruffleFunction stf) {
       if (cachedFn == null) {
         // First call: initialize the monomorphic cache.
+        // Set all derived fields BEFORE cachedFn (the guard), so that any concurrent
+        // thread seeing cachedFn != null also sees the other fields initialized.
+        // Bazel evaluates .bzl files in parallel via Skyframe; imported functions share
+        // their Truffle AST (including DispatchNode) across threads.
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        cachedFn = stf;
         cachedFnIsSimple = stf.isSimplePositionalFunction();
         cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
         cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
         cachedSingleArgs = new Object[cachedTotalLocals + 2];
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
+        cachedFn = stf; // Must be last: acts as the publication guard.
       }
-      if (stf == cachedFn) {
-        // Monomorphic fast path.
+      if (stf == cachedFn && directCallNode != null) {
+        // Monomorphic fast path. The directCallNode null check is a safety net for
+        // concurrent initialization races across Skyframe threads.
         return callDirect(thread, stf, positional);
       }
       // Cache miss: a different StarlarkTruffleFunction — fall through to generic dispatch.
@@ -148,15 +156,17 @@ public final class DispatchNode extends Node {
   public Object dispatchSingle(StarlarkThread thread, Object fn, Object arg0) {
     if (fn instanceof StarlarkTruffleFunction stf) {
       if (cachedFn == null) {
+        // First call: initialize the monomorphic cache.
+        // Set all derived fields BEFORE cachedFn (the guard) — see dispatch() comment.
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        cachedFn = stf;
         cachedFnIsSimple = stf.isSimplePositionalFunction();
         cachedNumOrdinaryParams = stf.getResolvedFunction().getNumOrdinaryParameters();
         cachedTotalLocals = stf.getResolvedFunction().getLocals().size();
         cachedSingleArgs = new Object[cachedTotalLocals + 2];
         directCallNode = insert(DirectCallNode.create(stf.getCallTarget()));
+        cachedFn = stf; // Must be last: acts as the publication guard.
       }
-      if (stf == cachedFn) {
+      if (stf == cachedFn && directCallNode != null) {
         return callDirectSingle(thread, stf, arg0);
       }
     } else if (fn instanceof BuiltinFunction bf) {
@@ -201,43 +211,16 @@ public final class DispatchNode extends Node {
 
   /**
    * Single-argument variant of {@link #callDirect}: avoids allocating an intermediate {@code
-   * Object[1]} positional array.
+   * Object[1]} positional array by passing {@code arg0} directly to {@link
+   * #prepareArgsBoundarySingle}.
    *
-   * <p>For "simple" functions with exactly 1 ordinary parameter (the common {@code f(x)} case),
-   * reuses the pre-allocated {@link #cachedSingleArgs} array, filling slots [0]=callee,
-   * [1]=thread, [2]=arg0. This eliminates per-call {@code Object[]} allocation entirely. Safe
-   * because Starlark is single-threaded per {@link StarlarkThread} and the callee's prologue
-   * ({@link net.starlark.java.eval.truffle.nodes.StarlarkRootNode#execute}) copies args to frame
-   * slots before any nested call could reuse this array. Falls back to {@link
-   * #prepareArgsBoundarySingle} for functions with defaults, complex parameter patterns, or
-   * dynamic type checking.
+   * <p>Note: a previous optimization reused a pre-allocated args array ({@link #cachedSingleArgs})
+   * for simple single-parameter functions. This was removed because Bazel shares Truffle ASTs
+   * across Skyframe threads (via imported functions), and {@code frame.getArguments()} returns a
+   * reference to the original array — concurrent callers would corrupt each other's callee/thread
+   * values, leading to cross-thread call-stack corruption.
    */
   private Object callDirectSingle(StarlarkThread thread, StarlarkTruffleFunction stf, Object arg0) {
-    if (cachedFnIsSimple && cachedNumOrdinaryParams == 1
-        && !thread
-            .getSemantics()
-            .getBool(StarlarkSemantics.EXPERIMENTAL_STARLARK_DYNAMIC_TYPE_CHECKING)) {
-      // Hot path: simple function with exactly 1 param, no type checking, exact arg count match.
-      // Reuse the pre-allocated args array to avoid per-call Object[] allocation.
-      // Safe: Starlark is single-threaded per StarlarkThread, and StarlarkRootNode.execute()
-      // copies args to frame slots in its prologue before any nested call could reuse this array.
-      Object[] args = cachedSingleArgs;
-      args[0] = stf;
-      args[1] = thread;
-      args[2] = arg0;
-      pushAndCheckRecursionBoundary(thread, stf);
-      try {
-        Object result = directCallNode.call(args);
-        checkReturnTypeBoundary(thread, stf, result);
-        return result;
-      } catch (RuntimeException e) {
-        captureExceptionStackBoundary(thread, e);
-        throw e;
-      } finally {
-        StarlarkTruffleAccessor.popCallStack(thread);
-      }
-    }
-    // Non-simple, defaults needed, or dynamic type checking: use boundary path.
     Object[] args = prepareArgsBoundarySingle(thread, stf, arg0);
     pushAndCheckRecursionBoundary(thread, stf);
     try {
