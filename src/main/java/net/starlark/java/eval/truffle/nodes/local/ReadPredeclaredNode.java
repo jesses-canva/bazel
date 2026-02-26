@@ -14,7 +14,9 @@
 package net.starlark.java.eval.truffle.nodes.local;
 
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import net.starlark.java.eval.EvalException;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.eval.truffle.runtime.StarlarkTruffleFunction;
 
@@ -30,6 +32,20 @@ public final class ReadPredeclaredNode extends StarlarkExpressionNode {
     public Object executeGeneric(VirtualFrame frame) {
         Object[] args = frame.getArguments();
         StarlarkTruffleFunction callee = (StarlarkTruffleFunction) args[0];
-        return callee.getModule().getPredeclared(name);
+        Object value = callee.getModule().getPredeclared(name);
+        if (value == null) {
+            throwUninitialized(name);
+        }
+        return value;
+    }
+
+    @TruffleBoundary
+    private static void throwUninitialized(String varName) {
+        try {
+            throw new EvalException(
+                "predeclared variable '" + varName + "' is referenced before assignment.");
+        } catch (EvalException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
