@@ -393,6 +393,9 @@ public final class StarlarkTruffleAccessor {
    * Creates a {@link StarlarkFunction} from the given components. Used by {@code
    * StarlarkTruffleFunction.toStarlarkFunction()} to create a compatible wrapper for Java API
    * methods that expect {@code StarlarkFunction} parameters.
+   *
+   * @param truffleSource the original StarlarkTruffleFunction, so that calls to the wrapper
+   *     delegate back to the Truffle runtime for execution
    */
   public static StarlarkFunction createStarlarkFunction(
       net.starlark.java.syntax.Resolver.Function rfn,
@@ -400,7 +403,11 @@ public final class StarlarkTruffleAccessor {
       int[] globalIndex,
       Tuple defaultValues,
       Tuple freevars,
-      SymbolGenerator.Symbol<?> token) {
-    return new StarlarkFunction(rfn, module, globalIndex, defaultValues, freevars, token);
+      SymbolGenerator.Symbol<?> token,
+      StarlarkCallable truffleSource) {
+    StarlarkFunction sf =
+        new StarlarkFunction(rfn, module, globalIndex, defaultValues, freevars, token);
+    sf.setTruffleSource(truffleSource);
+    return sf;
   }
 }

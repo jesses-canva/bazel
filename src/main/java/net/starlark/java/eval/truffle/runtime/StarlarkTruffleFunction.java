@@ -350,7 +350,7 @@ public final class StarlarkTruffleFunction implements StarlarkCallable {
           net.starlark.java.eval.StarlarkTruffleAccessor.wrapTuple(freevarArray);
       cached =
           net.starlark.java.eval.StarlarkTruffleAccessor.createStarlarkFunction(
-              rfn, module, globalIndex, defaultValues, freevarTuple, token);
+              rfn, module, globalIndex, defaultValues, freevarTuple, token, this);
       cachedStarlarkFunction = cached;
     }
     return cached;

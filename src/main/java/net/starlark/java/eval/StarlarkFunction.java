@@ -56,6 +56,11 @@ public final class StarlarkFunction implements StarlarkCallable {
   // This may be mutated by export.
   private SymbolGenerator.Symbol<?> token;
 
+  // When this StarlarkFunction was created as a wrapper via toStarlarkFunction() from a
+  // StarlarkTruffleFunction, this field holds the original callable so that argument processing
+  // and execution can be delegated to the Truffle runtime.
+  @Nullable private StarlarkCallable truffleSource;
+
   StarlarkFunction(
       Resolver.Function rfn,
       Module module,
@@ -69,6 +74,11 @@ public final class StarlarkFunction implements StarlarkCallable {
     this.defaultValues = defaultValues;
     this.freevars = freevars;
     this.token = token;
+  }
+
+  /** Sets the original Truffle callable for wrapper StarlarkFunctions created via toStarlarkFunction(). */
+  void setTruffleSource(StarlarkCallable truffleSource) {
+    this.truffleSource = truffleSource;
   }
 
   /** Whether this function is defined at the top level of a file. */
@@ -196,7 +206,14 @@ public final class StarlarkFunction implements StarlarkCallable {
   }
 
   @Override
-  public StarlarkCallable.ArgumentProcessor requestArgumentProcessor(StarlarkThread thread) {
+  public StarlarkCallable.ArgumentProcessor requestArgumentProcessor(StarlarkThread thread)
+      throws EvalException {
+    // If this StarlarkFunction is a wrapper for a StarlarkTruffleFunction (created via
+    // toStarlarkFunction()), delegate to the original Truffle function's argument processor
+    // so that execution goes through the Truffle runtime.
+    if (truffleSource != null) {
+      return truffleSource.requestArgumentProcessor(thread);
+    }
     return new ArgumentProcessor(this, thread);
   }
 
