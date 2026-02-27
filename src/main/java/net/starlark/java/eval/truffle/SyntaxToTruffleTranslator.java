@@ -26,6 +26,7 @@ import net.starlark.java.eval.StarlarkFunction;
 import net.starlark.java.eval.StarlarkInt;
 import net.starlark.java.eval.StarlarkThread;
 import net.starlark.java.eval.truffle.nodes.BlockNode;
+import net.starlark.java.eval.truffle.nodes.DeferredRootNode;
 import net.starlark.java.eval.truffle.nodes.StarlarkExpressionNode;
 import net.starlark.java.eval.truffle.nodes.StarlarkModuleRootNode;
 import net.starlark.java.eval.truffle.nodes.StarlarkRootNode;
@@ -131,10 +132,14 @@ public final class SyntaxToTruffleTranslator {
     FrameDescriptor.Builder builder = FrameDescriptor.newBuilder();
     int numLocals = rfn.getLocals().size();
     // Reserve extra slots for comprehension results (one per comprehension) and for-loop
-    // iterators (one per for statement). countComprehensions is an exact count of
-    // allocateExtraSlot() calls made during translation.
-    int extraSlots = countComprehensions(rfn);
-    for (int i = 0; i < numLocals + extraSlots; i++) {
+    // iterators (one per for statement). The count is cached on the Resolver.Function to
+    // avoid redundant AST walks when the same function is translated multiple times.
+    int extra = rfn.getExtraSlots();
+    if (extra < 0) {
+      extra = countComprehensions(rfn);
+      rfn.setExtraSlots(extra);
+    }
+    for (int i = 0; i < numLocals + extra; i++) {
       builder.addSlot(FrameSlotKind.Object, null, null);
     }
     nextExtraSlot = numLocals;
@@ -326,6 +331,17 @@ public final class SyntaxToTruffleTranslator {
   }
 
   /**
+   * Translates a resolved function (def or lambda) into a Truffle root node. Used by {@link
+   * net.starlark.java.eval.truffle.nodes.DeferredRootNode} for lazy translation of function bodies.
+   */
+  public StarlarkRootNode translateFunction(Resolver.Function rfn) {
+    this.language = null;
+    FrameDescriptor fd = buildFrameDescriptor(rfn);
+    StarlarkStatementNode body = translateBlock(rfn.getBody());
+    return new StarlarkRootNode(language, fd, body, rfn.getName(), rfn.getLocals().size());
+  }
+
+  /**
    * Translates a top-level module block, wrapping assignment/def statements with
    * PostAssignHookNode to support BzlLoadFunction's "export" semantics.
    */
@@ -452,19 +468,11 @@ public final class SyntaxToTruffleTranslator {
   private StarlarkStatementNode translateDef(DefStatement stmt) {
     Resolver.Function rfn = stmt.getResolvedFunction();
 
-    // Build the inner function's frame descriptor and body.
-    // IMPORTANT: Use a separate translator for inner functions to avoid corrupting
-    // this translator's nextExtraSlot counter (which would cause frame slot collisions
-    // between comprehension result slots and local variable slots in the outer function).
-    SyntaxToTruffleTranslator innerTranslator =
-        new SyntaxToTruffleTranslator(module, globalIndex, thread);
-    innerTranslator.language = this.language;
-    FrameDescriptor innerFd = innerTranslator.buildFrameDescriptor(rfn);
-
-    StarlarkStatementNode innerBody = innerTranslator.translateBlock(rfn.getBody());
-    StarlarkRootNode rootNode =
-        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName(), rfn.getLocals().size());
-    CallTarget callTarget = rootNode.getCallTarget();
+    // Create a deferred root node that will translate the function body on first call.
+    // This avoids the overhead of eagerly translating function bodies at module load time
+    // for functions that may not be called during the loading phase.
+    DeferredRootNode deferredRoot = new DeferredRootNode(language, rfn, module, globalIndex);
+    CallTarget callTarget = deferredRoot.getCallTarget();
 
     // Default value expressions
     int nparams =
@@ -716,19 +724,11 @@ public final class SyntaxToTruffleTranslator {
 
   private StarlarkExpressionNode translateLambda(LambdaExpression expr) {
     // Lambda is translated similarly to def, but as an expression.
-    // Use a separate translator (same reason as translateDef - avoid slot corruption).
+    // Use a deferred root node to avoid eagerly translating the lambda body.
     Resolver.Function rfn = expr.getResolvedFunction();
-    SyntaxToTruffleTranslator innerTranslator =
-        new SyntaxToTruffleTranslator(module, globalIndex, thread);
-    innerTranslator.language = this.language;
-    FrameDescriptor innerFd = innerTranslator.buildFrameDescriptor(rfn);
+    DeferredRootNode deferredRoot = new DeferredRootNode(language, rfn, module, globalIndex);
+    CallTarget callTarget = deferredRoot.getCallTarget();
 
-    StarlarkStatementNode innerBody = innerTranslator.translateBlock(rfn.getBody());
-    StarlarkRootNode rootNode =
-        new StarlarkRootNode(language, innerFd, innerBody, rfn.getName(), rfn.getLocals().size());
-    CallTarget callTarget = rootNode.getCallTarget();
-
-    // For now, return a node that creates the function object at runtime
     return new LambdaNode(rfn, callTarget, module, globalIndex);
   }
 

@@ -212,6 +212,11 @@ public final class Resolver extends NodeVisitor {
     private final ImmutableList<Binding> freevars;
     private final ImmutableList<String> globals; // TODO(adonovan): move to Program.
 
+    // Cached count of extra frame slots needed for comprehension results and for-loop
+    // iterators. Set lazily by the Truffle translator to avoid redundant AST walks.
+    // -1 means not yet computed.
+    private int extraSlots = -1;
+
     // Set by type checking (possibly more than once) if applicable.
     // Null is treated as untyped / Any.
     // Always null for the function associated with a StarlarkFile object.
@@ -310,6 +315,20 @@ public final class Resolver extends NodeVisitor {
      */
     public ImmutableList<String> getGlobals() {
       return globals;
+    }
+
+    /**
+     * Returns the cached count of extra frame slots needed for comprehension results and for-loop
+     * iterators, or -1 if not yet computed. Set by the Truffle translator via {@link
+     * #setExtraSlots}.
+     */
+    public int getExtraSlots() {
+      return extraSlots;
+    }
+
+    /** Sets the extra slot count (called by the Truffle translator to cache the computed value). */
+    public void setExtraSlots(int count) {
+      this.extraSlots = count;
     }
 
     /**
