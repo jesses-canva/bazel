@@ -48,6 +48,10 @@ public final class TruffleIntegration {
               + defaultRuntime.getFallbackReason()
               + ". Ensure Bazel is running on GraalVM with the Truffle compiler on the module path.");
     }
+    // Register this class as the Starlark file executor. Starlark.execFileProgram() loads this
+    // class via Class.forName on first use, triggering this static block, after which all
+    // subsequent calls dispatch directly through the registered interface — no reflection.
+    Starlark.setTruffleExecutor(TruffleIntegration::execFileProgram);
   }
 
   private TruffleIntegration() {} // uninstantiable

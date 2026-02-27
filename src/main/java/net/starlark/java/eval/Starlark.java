@@ -1282,51 +1282,72 @@ public final class Starlark {
     return execFile(input, options, module, thread);
   }
 
-  // Cached MethodHandle to TruffleIntegration.execFileProgram for fast reflective dispatch.
-  // MethodHandle.invoke is significantly faster than Method.invoke (no boxing, no security checks,
-  // and exceptions propagate directly without InvocationTargetException wrapping).
-  private static volatile java.lang.invoke.MethodHandle truffleExecHandle;
+  /**
+   * Executor interface implemented by the Truffle-based Starlark interpreter.
+   *
+   * <p>Decouples {@link #execFileProgram} from the truffle package at compile time: {@code
+   * TruffleIntegration} registers an instance via {@link #setTruffleExecutor} from its static
+   * initializer, which is triggered by a single {@link Class#forName} call on first use.
+   */
+  @FunctionalInterface
+  public interface TruffleFileExecutor {
+    Object exec(Program prog, Module module, StarlarkThread thread)
+        throws EvalException, InterruptedException;
+  }
+
+  private static volatile TruffleFileExecutor truffleExecutor;
+
+  /**
+   * Registers the Truffle file executor. Called by {@code TruffleIntegration}'s static
+   * initializer.
+   */
+  public static void setTruffleExecutor(TruffleFileExecutor executor) {
+    truffleExecutor = executor;
+  }
 
   /**
    * Executes a compiled Starlark file (as obtained from {@link Program#compileFile}) in the given
    * StarlarkThread. On success it returns None, unless the file's final statement is an expression,
    * in which case its value is returned.
    *
-   * <p>Uses a cached MethodHandle to call TruffleIntegration to avoid a compile-time dependency
-   * between eval/ and eval/truffle/.
+   * <p>Dispatches to {@code TruffleIntegration} via a registered {@link TruffleFileExecutor}. On
+   * first call, uses {@link Class#forName} to load {@code TruffleIntegration} and trigger its
+   * static initializer, which registers the executor. Subsequent calls use the cached executor
+   * directly without any reflection.
    *
    * @throws EvalException if there was a (dynamic) evaluation error.
    * @throws InterruptedException if the Java thread was interrupted during evaluation.
    */
   public static Object execFileProgram(Program prog, Module module, StarlarkThread thread)
       throws EvalException, InterruptedException {
-    try {
-      java.lang.invoke.MethodHandle handle = truffleExecHandle;
-      if (handle == null) {
-        Class<?> truffleIntegration =
-            Class.forName("net.starlark.java.eval.truffle.TruffleIntegration");
-        handle =
-            java.lang.invoke.MethodHandles.lookup()
-                .findStatic(
-                    truffleIntegration,
-                    "execFileProgram",
-                    java.lang.invoke.MethodType.methodType(
-                        Object.class, Program.class, Module.class, StarlarkThread.class));
-        truffleExecHandle = handle;
-      }
-      return handle.invoke(prog, module, thread);
-    } catch (EvalException | InterruptedException e) {
-      throw e;
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Error e) {
-      throw e;
-    } catch (Throwable e) {
-      throw new EvalException(
-          "Failed to load Truffle interpreter. Ensure the truffle runtime is on the classpath: "
-              + e.getMessage(),
-          e);
+    TruffleFileExecutor executor = truffleExecutor;
+    if (executor == null) {
+      executor = loadTruffleExecutor();
     }
+    return executor.exec(prog, module, thread);
+  }
+
+  private static synchronized TruffleFileExecutor loadTruffleExecutor() throws EvalException {
+    TruffleFileExecutor executor = truffleExecutor; // double-checked locking (field is volatile)
+    if (executor != null) {
+      return executor;
+    }
+    try {
+      // Trigger TruffleIntegration's static initializer, which calls setTruffleExecutor().
+      // Class.forName is the only reflection here; it is necessary to break the compile-time
+      // circular dependency between eval/ and eval/truffle/.
+      Class.forName("net.starlark.java.eval.truffle.TruffleIntegration");
+    } catch (ClassNotFoundException e) {
+      throw new EvalException(
+          "Truffle interpreter not found. Ensure the truffle runtime is on the classpath.", e);
+    }
+    // ExceptionInInitializerError from TruffleIntegration's static block (e.g. JIT unavailable)
+    // is an Error and propagates unchecked — intentional fail-fast behaviour.
+    executor = truffleExecutor;
+    if (executor == null) {
+      throw new EvalException("TruffleIntegration did not register a file executor");
+    }
+    return executor;
   }
 
   /**
