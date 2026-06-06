@@ -233,6 +233,7 @@ native_image(
     static_zlib = "@zlib",
     deps = [
         ":main",
+        "//src/main/java/com/google/devtools/build/lib/bazel/graalvm_resources",
         "//src/main/java/com/google/devtools/build/lib/util:simple_log_handler",
         "//src/main/java/com/google/devtools/build/lib/util:single_line_formatter",
     ],
