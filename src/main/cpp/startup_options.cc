@@ -567,7 +567,10 @@ blaze_exit_code::ExitCode StartupOptions::SanityCheckJavabase(
 }
 
 blaze_util::Path StartupOptions::GetExe(const blaze_util::Path &jvm,
-                                        const string &jar_path) const {
+                                        const string &jar_or_exe_path) const {
+  if (!blaze_util::ends_with(jar_or_exe_path, ".jar")) {
+    return blaze_util::Path(install_base).GetRelative(jar_or_exe_path);
+  }
   return jvm;
 }
 
@@ -575,13 +578,17 @@ void StartupOptions::AddJVMArgumentPrefix(const blaze_util::Path &javabase,
                                           std::vector<string> *result) const {}
 
 void StartupOptions::AddJVMArgumentSuffix(
-    const blaze_util::Path &real_install_dir, const string &jar_path,
+    const blaze_util::Path &real_install_dir, const string &jar_or_exe_path,
     std::vector<string> *result) const {
+  if (!blaze_util::ends_with(jar_or_exe_path, ".jar")) {
+    // Native binary: exec'd directly, no JVM arguments needed.
+    return;
+  }
   if (extra_classpath.empty()) {
     result->push_back("-jar");
-    result->push_back(real_install_dir.GetRelative(jar_path).AsJvmArgument());
+    result->push_back(real_install_dir.GetRelative(jar_or_exe_path).AsJvmArgument());
   } else {
-    string classpath = real_install_dir.GetRelative(jar_path).AsJvmArgument() +
+    string classpath = real_install_dir.GetRelative(jar_or_exe_path).AsJvmArgument() +
                        kListSeparator + extra_classpath;
     // Since we're not executing the server jar directly, we must manually set
     // module opening directives on the command line.

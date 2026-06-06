@@ -322,7 +322,7 @@ void ExtractBuildLabel(const string &archive_path, string *build_label) {
   *build_label = pze.UnzipUntil(archive_path, "build-label.txt");
 }
 
-string GetServerJarPath(const vector<string> &archive_contents) {
+string GetServerJarOrExePath(const vector<string> &archive_contents) {
   if (archive_contents.empty()) {
     BAZEL_DIE(blaze_exit_code::LOCAL_ENVIRONMENTAL_ERROR)
         << "Couldn't find server jar in archive";

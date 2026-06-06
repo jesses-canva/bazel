@@ -103,7 +103,7 @@ void ExtractBuildLabel(const std::string &archive_path,
                        std::string *build_label);
 
 // Returns the server jar path from the archive contents.
-std::string GetServerJarPath(const std::vector<std::string> &archive_contents);
+std::string GetServerJarOrExePath(const std::vector<std::string> &archive_contents);
 
 }  // namespace blaze
 

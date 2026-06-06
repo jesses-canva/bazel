@@ -20,7 +20,18 @@ set -euo pipefail
 # starts the server from.
 
 WORKDIR="$(pwd)"
+OS="$(uname -s)"
 OUT=$1; shift
+
+# Parse optional flags.
+NATIVE=0
+while [[ "${1:-}" == --* ]]; do
+  case "$1" in
+    --native) NATIVE=1; shift ;;
+    *) echo "Unknown flag: $1" >&2; exit 1 ;;
+  esac
+done
+
 EMBEDDED_TOOLS=$1; shift
 DEPLOY_JAR=$1; shift
 INSTALL_BASE_KEY=$1; shift
@@ -43,29 +54,35 @@ trap "rm -fr ${ROOT}" EXIT
 
 cp $* ${PACKAGE_DIR}
 
-if [[ $DEV_BUILD -eq 0 ]]; then
-  # Unpack the deploy jar for postprocessing and for "re-compressing" to save
-  # ~10% of final binary size.
-  mkdir -p $RECOMP
-  unzip -q -d $RECOMP ${DEPLOY_JAR}
-  cd $RECOMP
+if [[ $NATIVE -eq 1 ]]; then
+  # Native-image build: the "deploy jar" is actually the native server binary.
+  # Skip JAR unpacking and record a build label.
+  echo -n "no_version" > "${PACKAGE_DIR}/build-label.txt"
+else
+  if [[ $DEV_BUILD -eq 0 ]]; then
+    # Unpack the deploy jar for postprocessing and for "re-compressing" to save
+    # ~10% of final binary size.
+    mkdir -p $RECOMP
+    unzip -q -d $RECOMP ${DEPLOY_JAR}
+    cd $RECOMP
 
-  # Zero out timestamps and sort the entries to ensure determinism.
-  find . -type f -print0 | xargs -0 touch -t 198001010000.00
-  find . -type f | sort | zip -q0DX@ "$DEPLOY_UNCOMP"
+    # Zero out timestamps and sort the entries to ensure determinism.
+    find . -type f -print0 | xargs -0 touch -t 198001010000.00
+    find . -type f | sort | zip -q0DX@ "$DEPLOY_UNCOMP"
 
-  # While we're in the deploy jar, grab the label and pack it into the final
-  # packaged distribution zip where it can be used to quickly determine version
-  # info.
-  bazel_label="$(\
-    (grep '^build.label=' build-data.properties | cut -d'=' -f2- | tr -d '\n') \
-        || echo -n 'no_version')"
+    # While we're in the deploy jar, grab the label and pack it into the final
+    # packaged distribution zip where it can be used to quickly determine version
+    # info.
+    bazel_label="$(\
+      (grep '^build.label=' build-data.properties | cut -d'=' -f2- | tr -d '\n') \
+          || echo -n 'no_version')"
 
-  cd "$WORKDIR"
+    cd "$WORKDIR"
 
-  DEPLOY_JAR="$DEPLOY_UNCOMP"
+    DEPLOY_JAR="$DEPLOY_UNCOMP"
+  fi
+  echo -n "${bazel_label:-no_version}" > "${PACKAGE_DIR}/build-label.txt"
 fi
-echo -n "${bazel_label:-no_version}" > "${PACKAGE_DIR}/build-label.txt"
 
 if [ -n "${EMBEDDED_TOOLS}" ]; then
   mkdir ${PACKAGE_DIR}/embedded_tools
@@ -78,19 +95,33 @@ fi
   # "platforms" is a well-known module, so no need to tamper with anything here.
 )
 
+if [[ $NATIVE -eq 1 ]]; then
+  if [[ "$OS" == MINGW* || "$OS" == CYGWIN* || "$OS" == MSYS* ]]; then
+    SERVER_JAR_OR_EXE="A-server.exe"
+  else
+    SERVER_JAR_OR_EXE="A-server"
+  fi
+else
+  SERVER_JAR_OR_EXE="A-server.jar"
+fi
+
 # Make a list of the files in the order we want them inside the final zip.
 (
   cd $PACKAGE_DIR
-  # The server jar needs to be the first binary we extract.
-  # This is how the Bazel client knows which .jar to pass to the JVM.
-  echo A-server.jar
+  # The server binary must be first. The Bazel client uses the name to determine
+  # whether to exec it directly (A-server / A-server.exe) or pass it to a JVM
+  # (A-server.jar).
+  echo "${SERVER_JAR_OR_EXE}"
   find . -type f | sort
   # And install_base_key must be last.
   echo install_base_key
 ) > $FILE_LIST
 
 # Move these after the 'find' above.
-cp $DEPLOY_JAR $PACKAGE_DIR/A-server.jar
+cp $DEPLOY_JAR $PACKAGE_DIR/${SERVER_JAR_OR_EXE}
+if [[ $NATIVE -eq 1 ]]; then
+  chmod +x $PACKAGE_DIR/${SERVER_JAR_OR_EXE}
+fi
 cp $INSTALL_BASE_KEY $PACKAGE_DIR/install_base_key
 
 # Zero timestamps.

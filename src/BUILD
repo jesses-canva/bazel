@@ -31,7 +31,7 @@ sh_binary(
     srcs = [
         # Ensure we haven't forgotten any package-zip items,
         # otherwise bazel won't correctly reextract modified files.
-        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
+        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native" if native else "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
         "//src/main/java/net/starlark/java/eval:cpu_profiler",
         "//src/main/cpp:client",
         "//src/main/tools:process-wrapper",
@@ -49,11 +49,24 @@ sh_binary(
     tools = [
         ":md5",
     ],
-) for suffix, embedded_tools_target in {
-    "_jdk_allmodules": [":embedded_tools_jdk_allmodules"],
-    "_jdk_minimal": [":embedded_tools_jdk_minimal"],
-    "_nojdk": [":embedded_tools_nojdk"],
-    "_notools": [],
+) for suffix, (embedded_tools_target, native) in {
+    "_jdk_allmodules": (
+        [":embedded_tools_jdk_allmodules"],
+        False,
+    ),
+    "_jdk_minimal": (
+        [":embedded_tools_jdk_minimal"],
+        False,
+    ),
+    "_nojdk": (
+        [":embedded_tools_nojdk"],
+        False,
+    ),
+    "_notools": ([], False),
+    "_native": (
+        [":embedded_tools_native"],
+        True,
+    ),
 }.items()]
 
 # Try to grab the java version from the java_toolchain.
@@ -132,6 +145,7 @@ JAVA_TOOLS = [
     "_jdk_allmodules": [":embedded_jdk_allmodules"],
     "_jdk_minimal": [":embedded_jdk_minimal"],
     "_nojdk": [],
+    "_native": [],
 }.items()]
 
 rule_size_test(
@@ -270,6 +284,7 @@ genrule(
     "_jdk_allmodules",
     "_jdk_minimal",
     "_nojdk",
+    "_native",
 ]]
 
 [genrule(
@@ -285,13 +300,15 @@ genrule(
     "_jdk_allmodules",
     "_jdk_minimal",
     "_nojdk",
+    "_native",
 ]]
 
 [genrule(
     name = "package-zip" + suffix,
-    # This script assumes the following arg order:
-    #   1) embedded tools zip (if it exists)
-    #   2) the deploy jar
+    # package-bazel.sh arg order:
+    #   [--native]  (native builds only)
+    #   1) embedded tools zip (if it exists, else empty string)
+    #   2) the deploy jar (or native server binary for _native)
     #   3) the install base key
     #   4) the platforms archive
     #   5) everything else to be bundled
@@ -299,7 +316,8 @@ genrule(
     # of :install_base_key-file, otherwise bazel won't correctly reextract
     # modified files.
     srcs = ([":embedded_tools" + suffix + ".zip"] if embed else []) + [
-        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
+        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native" if native else "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
+    ] + [
         "install_base_key" + suffix,
         "//:platforms-srcs",
         # Non-ordered items follow:
@@ -314,13 +332,16 @@ genrule(
         ],
     }),
     outs = ["package" + suffix + ".zip"],
-    cmd = "$(location :package_bazel_on_host_platform) $@ " + ("" if embed else "''") + " $(SRCS)",
+    cmd = "$(location :package_bazel_on_host_platform) $@" +
+          (" --native" if native else "") +
+          (" " if embed else " ''") + " $(SRCS)",
     tools = [":package_bazel_on_host_platform"],
-) for suffix, embed in [
-    ("_jdk_allmodules", True),
-    ("_jdk_minimal", True),
-    ("_notools", False),
-    ("_nojdk", True),
+) for suffix, embed, native in [
+    ("_jdk_allmodules", True, False),
+    ("_jdk_minimal", True, False),
+    ("_notools", False, False),
+    ("_nojdk", True, False),
+    ("_native", True, True),
 ]]
 
 genrule(
@@ -345,8 +366,8 @@ genrule(
     # suffix(say foo.exe), if foo.exe exists and foo doesn't. So, on windows, we
     # need to remove bazel.exe first, so that cat to bazel won't fail.
     cmd = "rm -f $@; cat $(location //src/main/cpp:client) $(location :package-zip" + jdk + ") > $@ && zip -qA $@ && chmod a+x $@",
-    executable = 1,
-    output_to_bindir = 1,
+    executable = True,
+    output_to_bindir = True,
     visibility = [
         "//:__pkg__",  # For distribution archive lockfile generation
         "//scripts:__pkg__",  # For bash completion generation
@@ -362,6 +383,7 @@ genrule(
     ("_jdk_minimal", "_jdk_minimal"),
     ("_notools", "_notools"),
     ("_nojdk", "_nojdk"),
+    ("_native", "_native"),
 ]]
 
 # Build an executable named `bazel.exe`.
@@ -372,8 +394,8 @@ genrule(
     srcs = [":bazel-bin" + suffix],
     outs = ["bazel" + suffix + ".exe"],
     cmd = "cp $(location :bazel-bin" + suffix + ") $@",
-    executable = 1,
-    output_to_bindir = 1,
+    executable = True,
+    output_to_bindir = True,
     visibility = [
         "//scripts:__pkg__",  # For bash completion generation
         "//scripts/packages:__pkg__",  # For installer generation
@@ -525,7 +547,7 @@ genrule(
     ],
     outs = ["java_tools_dist.zip"],
     cmd = "zip -qXr $@ $$(echo $(SRCS) | sort)",
-    output_to_bindir = 1,
+    output_to_bindir = True,
     visibility = ["//src/test/shell/bazel:__pkg__"],
 )
 

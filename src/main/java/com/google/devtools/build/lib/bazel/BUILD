@@ -1,3 +1,4 @@
+load("@rules_graalvm//graalvm:defs.bzl", "native_image")
 load("@rules_java//java:defs.bzl", "java_binary", "java_library")
 
 package(
@@ -200,6 +201,40 @@ java_library(
         "//src/main/java/com/google/devtools/build/lib/starlarkdebug/module",
         "//src/main/java/com/google/devtools/build/lib/worker:worker_module",
         "//third_party:guava",
+    ],
+)
+
+native_image(
+    name = "BazelServer_native",
+    executable_name = select({
+        "@bazel_tools//src/conditions:windows": "BazelServer_native",
+        "//conditions:default": "BazelServer_native",
+    }),
+    extra_args = [
+        "-H:+UnlockExperimentalVMOptions",
+        "-H:-UseContainerSupport",
+        "-J--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "-J--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "-J--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "-J--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "-H:+ReportExceptionStackTraces",
+    ] + select({
+        "@platforms//os:linux": [
+            "-H:+StaticExecutableWithDynamicLibC",
+        ],
+        "//conditions:default": [],
+    }) + select({
+        "@platforms//cpu:x86_64": [
+            "-march=x86-64-v2",
+        ],
+        "//conditions:default": [],
+    }),
+    main_class = "com.google.devtools.build.lib.bazel.Bazel",
+    static_zlib = "@zlib",
+    deps = [
+        ":main",
+        "//src/main/java/com/google/devtools/build/lib/util:simple_log_handler",
+        "//src/main/java/com/google/devtools/build/lib/util:single_line_formatter",
     ],
 )
 
