@@ -231,6 +231,7 @@ maven.install(
         "org.apache.velocity:velocity:1.7",
         "org.checkerframework:checker-qual:3.42.0",
         "org.commonmark:commonmark:0.25.0",
+        "org.graalvm.sdk:nativeimage:25.0.2",
         "org.openjdk.jmh:jmh-core:1.37",
         "org.openjdk.jmh:jmh-generator-annprocess:1.37",
         "org.openjdk.jol:jol-core:0.17",

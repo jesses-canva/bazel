@@ -217,6 +217,9 @@ native_image(
         "-J--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
         "-J--add-opens=java.base/java.nio=ALL-UNNAMED",
         "-J--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "-J--add-opens=org.graalvm.nativeimage.builder/com.oracle.svm.hosted.jdk.localization=ALL-UNNAMED",
+        "--initialize-at-build-time=com.google.devtools.build.lib.bazel.repository.decompressor.CompressedTarFunction$MarkedIso88591Charset",
+        "--initialize-at-build-time=com.google.devtools.build.lib.bazel.repository.decompressor.CompressedTarFunction$MarkedIso88591CharsetProvider",
         "-H:+ReportExceptionStackTraces",
     ] + select({
         "@platforms//os:linux": [
@@ -230,10 +233,13 @@ native_image(
         "//conditions:default": [],
     }),
     main_class = "com.google.devtools.build.lib.bazel.Bazel",
+    native_features = [
+        "com.google.devtools.build.lib.bazel.nativeimage.CompressedTarNativeImageFeature",
+    ],
     static_zlib = "@zlib",
     deps = [
         ":main",
-        "//src/main/java/com/google/devtools/build/lib/bazel/graalvm_resources",
+        "//src/main/java/com/google/devtools/build/lib/bazel/nativeimage",
         "//src/main/java/com/google/devtools/build/lib/util:simple_log_handler",
         "//src/main/java/com/google/devtools/build/lib/util:single_line_formatter",
     ],

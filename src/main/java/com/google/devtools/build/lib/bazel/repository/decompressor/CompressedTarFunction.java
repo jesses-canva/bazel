@@ -179,10 +179,15 @@ public abstract class CompressedTarFunction implements Decompressor {
         .orElseGet(() -> StringEncoding.unicodeToInternal(name));
   }
 
+  /** Returns the {@link MarkedIso88591Charset} instance for native image registration. */
+  public static Charset getMarkedIso88591Charset() {
+    return MarkedIso88591CharsetProvider.CHARSET;
+  }
+
   /** A provider of {@link MarkedIso88591Charset}s. */
   @AutoService(CharsetProvider.class)
   public static class MarkedIso88591CharsetProvider extends CharsetProvider {
-    private static final Charset CHARSET = new MarkedIso88591Charset();
+    static final Charset CHARSET = new MarkedIso88591Charset();
 
     @Override
     public Iterator<Charset> charsets() {
@@ -249,6 +254,11 @@ public abstract class CompressedTarFunction implements Decompressor {
           return CoderResult.UNDERFLOW;
         }
       };
+    }
+
+    @Override
+    public boolean canEncode() {
+      return false;
     }
 
     @Override
