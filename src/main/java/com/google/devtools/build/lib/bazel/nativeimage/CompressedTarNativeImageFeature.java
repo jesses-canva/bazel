@@ -17,6 +17,7 @@ package com.google.devtools.build.lib.bazel.nativeimage;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import org.graalvm.nativeimage.hosted.Feature;
+import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 
 /**
  * GraalVM native image {@link Feature} that registers {@link
@@ -41,6 +42,10 @@ public final class CompressedTarNativeImageFeature implements Feature {
               "com.google.devtools.build.lib.bazel.repository.decompressor.CompressedTarFunction");
       Charset charset =
           (Charset) compressedTarFunction.getMethod("getMarkedIso88591Charset").invoke(null);
+
+      // The charset instance will be stored in the image heap (via LocalizationSupport.charsets),
+      // so its class must be initialized at build time.
+      RuntimeClassInitialization.initializeAtBuildTime(charset.getClass());
 
       Class<?> localizationFeature =
           Class.forName("com.oracle.svm.hosted.jdk.localization.LocalizationFeature");

@@ -211,15 +211,12 @@ native_image(
         "//conditions:default": "BazelServer_native",
     }),
     extra_args = [
-        "-H:+UnlockExperimentalVMOptions",
-        "-H:-UseContainerSupport",
+        "--strict-image-heap",
         "-J--add-opens=java.base/java.lang=ALL-UNNAMED",
         "-J--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
         "-J--add-opens=java.base/java.nio=ALL-UNNAMED",
         "-J--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
         "-J--add-opens=org.graalvm.nativeimage.builder/com.oracle.svm.hosted.jdk.localization=ALL-UNNAMED",
-        "--initialize-at-build-time=com.google.devtools.build.lib.bazel.repository.decompressor.CompressedTarFunction$MarkedIso88591Charset",
-        "--initialize-at-build-time=com.google.devtools.build.lib.bazel.repository.decompressor.CompressedTarFunction$MarkedIso88591CharsetProvider",
         "-H:+ReportExceptionStackTraces",
     ] + select({
         "@platforms//os:linux": [
