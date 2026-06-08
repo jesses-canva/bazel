@@ -351,8 +351,8 @@ use_repo(
     "debian_cc_deps",
     "debian_java_deps",
     "debian_proto_deps",
-    "graalvm_ce_toolchains",
-    "graalvm_oracle",
+    "graalvm",
+    "graalvm_toolchains",
     "openjdk_linux_aarch64_vanilla",
     "openjdk_linux_ppc64le_vanilla",
     "openjdk_linux_riscv64_vanilla",
@@ -467,4 +467,4 @@ register_toolchains("@local_config_winsdk//:all")
 
 register_toolchains("//src/main/res:empty_rc_toolchain")
 
-register_toolchains("@graalvm_ce_toolchains//:gvm")
+register_toolchains("@graalvm_toolchains//:gvm")

@@ -11,6 +11,10 @@ load(":rule_size_test.bzl", "rule_size_test")
 
 package(default_applicable_licenses = ["@io_bazel//:license"])
 
+BAZEL_SERVER_DEPLOY_JAR = "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar"
+BAZEL_SERVER_NATIVE = "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native"
+BAZEL_SERVER_NATIVE_INSTRUMENTED = "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native_instrumented"
+
 exports_files([
     "jdeps_modules.golden",
     "MODULE.tools",
@@ -31,7 +35,7 @@ sh_binary(
     srcs = [
         # Ensure we haven't forgotten any package-zip items,
         # otherwise bazel won't correctly reextract modified files.
-        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native" if native else "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
+        server_target,
         "//src/main/java/net/starlark/java/eval:cpu_profiler",
         "//src/main/cpp:client",
         "//src/main/tools:process-wrapper",
@@ -49,23 +53,30 @@ sh_binary(
     tools = [
         ":md5",
     ],
-) for suffix, (embedded_tools_target, native) in {
+) for suffix, (embedded_tools_target, server_target) in {
     "_jdk_allmodules": (
         [":embedded_tools_jdk_allmodules"],
-        False,
+        BAZEL_SERVER_DEPLOY_JAR,
     ),
     "_jdk_minimal": (
         [":embedded_tools_jdk_minimal"],
-        False,
+        BAZEL_SERVER_DEPLOY_JAR,
     ),
     "_nojdk": (
         [":embedded_tools_nojdk"],
-        False,
+        BAZEL_SERVER_DEPLOY_JAR,
     ),
-    "_notools": ([], False),
+    "_notools": (
+        [],
+        BAZEL_SERVER_DEPLOY_JAR,
+    ),
     "_native": (
         [":embedded_tools_native"],
-        True,
+        BAZEL_SERVER_NATIVE,
+    ),
+    "_native_instrumented": (
+        [":embedded_tools_native_instrumented"],
+        BAZEL_SERVER_NATIVE_INSTRUMENTED,
     ),
 }.items()]
 
@@ -146,6 +157,7 @@ JAVA_TOOLS = [
     "_jdk_minimal": [":embedded_jdk_minimal"],
     "_nojdk": [],
     "_native": [],
+    "_native_instrumented": [],
 }.items()]
 
 rule_size_test(
@@ -285,6 +297,7 @@ genrule(
     "_jdk_minimal",
     "_nojdk",
     "_native",
+    "_native_instrumented",
 ]]
 
 [genrule(
@@ -301,6 +314,7 @@ genrule(
     "_jdk_minimal",
     "_nojdk",
     "_native",
+    "_native_instrumented",
 ]]
 
 [genrule(
@@ -316,7 +330,7 @@ genrule(
     # of :install_base_key-file, otherwise bazel won't correctly reextract
     # modified files.
     srcs = ([":embedded_tools" + suffix + ".zip"] if embed else []) + [
-        "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_native" if native else "//src/main/java/com/google/devtools/build/lib/bazel:BazelServer_deploy.jar",
+        server_target,
     ] + [
         "install_base_key" + suffix,
         "//:platforms-srcs",
@@ -336,12 +350,13 @@ genrule(
           (" --native" if native else "") +
           (" " if embed else " ''") + " $(SRCS)",
     tools = [":package_bazel_on_host_platform"],
-) for suffix, embed, native in [
-    ("_jdk_allmodules", True, False),
-    ("_jdk_minimal", True, False),
-    ("_notools", False, False),
-    ("_nojdk", True, False),
-    ("_native", True, True),
+) for suffix, embed, native, server_target in [
+    ("_jdk_allmodules", True, False, BAZEL_SERVER_DEPLOY_JAR),
+    ("_jdk_minimal", True, False, BAZEL_SERVER_DEPLOY_JAR),
+    ("_notools", False, False, BAZEL_SERVER_DEPLOY_JAR),
+    ("_nojdk", True, False, BAZEL_SERVER_DEPLOY_JAR),
+    ("_native", True, True, BAZEL_SERVER_NATIVE),
+    ("_native_instrumented", True, True, BAZEL_SERVER_NATIVE_INSTRUMENTED),
 ]]
 
 genrule(
@@ -384,6 +399,7 @@ genrule(
     ("_notools", "_notools"),
     ("_nojdk", "_nojdk"),
     ("_native", "_native"),
+    ("_native_instrumented", "_native_instrumented"),
 ]]
 
 # Build an executable named `bazel.exe`.

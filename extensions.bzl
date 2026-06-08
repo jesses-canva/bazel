@@ -40,13 +40,7 @@ def _bazel_build_deps(ctx):
     BAZEL_TOOLS_DEPS_REPOS = parse_bazel_module_repos(ctx, ctx.path(Label("//src/test/tools/bzlmod:MODULE.bazel.lock")))
     repo_cache_tar(name = "bazel_tools_repo_cache", repos = BAZEL_TOOLS_DEPS_REPOS, lockfile = "//src/test/tools/bzlmod:MODULE.bazel.lock")
     graalvm_repository(
-        name = "graalvm_ce",
-        distribution = "ce",
-        java_version = "21",
-        version = "21.0.2",
-    )
-    graalvm_repository(
-        name = "graalvm_oracle",
+        name = "graalvm",
         distribution = "oracle",
         java_version = "21",
         version = "21.0.2",

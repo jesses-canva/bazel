@@ -5,6 +5,11 @@ package(
     default_visibility = ["//src/main/java/com/google/devtools/build/lib/bazel:__pkg__"],
 )
 
+filegroup(
+    name = "pgo_profiles",
+    srcs = glob(["pgo/*.iprof"], allow_empty = True),
+)
+
 java_library(
     name = "nativeimage",
     srcs = ["CompressedTarNativeImageFeature.java"],

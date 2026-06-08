@@ -430,7 +430,7 @@
     },
     "@@envoy_api+//bazel:repositories.bzl%non_module_deps": {
       "general": {
-        "bzlTransitiveDigest": "9WmOn7ZEOTymbChrodgB7kkXkW9M2y+/emhjtH43DMc=",
+        "bzlTransitiveDigest": "oD11lheuJMsIsrerbyv8hlRJTb4fYVpomeGW15xjoyo=",
         "usagesDigest": "lOhJkV09ITWn6LOK9fLMuf1t3969wdr45lToQ2MVQoU=",
         "recordedInputs": [
           "REPO_MAPPING:envoy_api+,bazel_tools bazel_tools",
@@ -518,7 +518,7 @@
     },
     "@@rules_perl+//perl:extensions.bzl%perl_repositories": {
       "general": {
-        "bzlTransitiveDigest": "T3CUJFKUj0hwwbPycv/t4jBcjNDyL5Umt5ZO8+14Q5A=",
+        "bzlTransitiveDigest": "g1rXp5NGCQy3Tr3iu7ZsPVenicrLqhRpMNGDyE7CwFM=",
         "usagesDigest": "qSSNDdCNVxNhY36wMndEAFacdhR0ooLTmumfad0km9s=",
         "recordedInputs": [
           "REPO_MAPPING:rules_perl+,bazel_tools bazel_tools",

@@ -204,31 +204,51 @@ java_library(
     ],
 )
 
+_NATIVE_IMAGE_EXTRA_ARGS = [
+    "--strict-image-heap",
+    "-J--add-opens=java.base/java.lang=ALL-UNNAMED",
+    "-J--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+    "-J--add-opens=java.base/java.nio=ALL-UNNAMED",
+    "-J--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
+    "-J--add-opens=org.graalvm.nativeimage.builder/com.oracle.svm.hosted.jdk.localization=ALL-UNNAMED",
+    "-H:+ReportExceptionStackTraces",
+] + select({
+    "@platforms//os:linux": [
+        "-H:+StaticExecutableWithDynamicLibC",
+    ],
+    "//conditions:default": [],
+}) + select({
+    "@platforms//cpu:x86_64": [
+        "-march=x86-64-v2",
+    ],
+    "//conditions:default": [],
+})
+
 native_image(
     name = "BazelServer_native",
     executable_name = select({
         "@bazel_tools//src/conditions:windows": "BazelServer_native",
         "//conditions:default": "BazelServer_native",
     }),
-    extra_args = [
-        "--strict-image-heap",
-        "-J--add-opens=java.base/java.lang=ALL-UNNAMED",
-        "-J--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
-        "-J--add-opens=java.base/java.nio=ALL-UNNAMED",
-        "-J--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
-        "-J--add-opens=org.graalvm.nativeimage.builder/com.oracle.svm.hosted.jdk.localization=ALL-UNNAMED",
-        "-H:+ReportExceptionStackTraces",
-    ] + select({
-        "@platforms//os:linux": [
-            "-H:+StaticExecutableWithDynamicLibC",
-        ],
-        "//conditions:default": [],
-    }) + select({
-        "@platforms//cpu:x86_64": [
-            "-march=x86-64-v2",
-        ],
-        "//conditions:default": [],
+    extra_args = _NATIVE_IMAGE_EXTRA_ARGS,
+    main_class = "com.google.devtools.build.lib.bazel.Bazel",
+    native_features = [
+        "com.google.devtools.build.lib.bazel.nativeimage.CompressedTarNativeImageFeature",
+    ],
+    profiles = ["//src/main/java/com/google/devtools/build/lib/bazel/nativeimage:pgo_profiles"],
+    static_zlib = "@zlib",
+    deps = [
+        ":native_build_deploy_jar",
+    ],
+)
+
+native_image(
+    name = "BazelServer_native_instrumented",
+    executable_name = select({
+        "@bazel_tools//src/conditions:windows": "BazelServer_native_instrumented",
+        "//conditions:default": "BazelServer_native_instrumented",
     }),
+    extra_args = _NATIVE_IMAGE_EXTRA_ARGS + ["--pgo-instrument"],
     main_class = "com.google.devtools.build.lib.bazel.Bazel",
     native_features = [
         "com.google.devtools.build.lib.bazel.nativeimage.CompressedTarNativeImageFeature",
