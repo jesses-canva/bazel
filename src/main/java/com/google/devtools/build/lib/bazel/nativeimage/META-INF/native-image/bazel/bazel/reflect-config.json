@@ -2105,315 +2105,801 @@
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ActionCache",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionCache$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionCache$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionCache$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ActionQuery",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionQuery$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionQuery$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionQuery$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ActionRewinding",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionRewinding$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionRewinding$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ActionRewinding$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Analysis",
-  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Analysis$Builder",
-  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Analysis$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Analysis$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Analysis$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$BuildProgress",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildProgress$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildProgress$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildProgress$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$BuildReport",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildReport$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildReport$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$BuildReport$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$CleanCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CleanCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CleanCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CleanCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Command",
-  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Command$Builder",
-  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Command$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Command$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Command$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$CppCompile",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CppCompile$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppCompile$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CppCompile$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$CppLink",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CppLink$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppLink$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CppLink$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Crash",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCauses","parameterTypes":["int"] }, {"name":"getCausesCount","parameterTypes":[] }, {"name":"getCausesList","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getOomCauseCategory","parameterTypes":[] }, {"name":"getOomCauseCategoryValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"hasOomCauseCategory","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Crash$Builder",
+  "methods":[{"name":"addAllCauses","parameterTypes":["java.lang.Iterable"] }, {"name":"addCauses","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Throwable"] }, {"name":"clearCauses","parameterTypes":[] }, {"name":"clearCode","parameterTypes":[] }, {"name":"clearOomCauseCategory","parameterTypes":[] }, {"name":"getCauses","parameterTypes":["int"] }, {"name":"getCausesBuilder","parameterTypes":["int"] }, {"name":"getCausesCount","parameterTypes":[] }, {"name":"getCausesList","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getOomCauseCategory","parameterTypes":[] }, {"name":"getOomCauseCategoryValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"hasOomCauseCategory","parameterTypes":[] }, {"name":"setCauses","parameterTypes":["int","com.google.devtools.build.lib.server.FailureDetails$Throwable"] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Crash$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }, {"name":"setOomCauseCategory","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Crash$OomCauseCategory"] }, {"name":"setOomCauseCategoryValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Crash$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Crash$OomCauseCategory",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$CrashOptions",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CrashOptions$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CrashOptions$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$CrashOptions$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$DiffAwareness",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DiffAwareness$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DiffAwareness$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DiffAwareness$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$DumpCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DumpCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DumpCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DumpCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$DynamicExecution",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DynamicExecution$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DynamicExecution$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$DynamicExecution$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Execution",
-  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Execution$Builder",
-  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Execution$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Execution$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Execution$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalDeps",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalDeps$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalDeps$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalDeps$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalRepository",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalRepository$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalRepository$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ExternalRepository$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$FailAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$FailAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FailAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$FailAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$FailureDetail",
-  "methods":[{"name":"getActionCache","parameterTypes":[] }, {"name":"getActionQuery","parameterTypes":[] }, {"name":"getActionRewinding","parameterTypes":[] }, {"name":"getAnalysis","parameterTypes":[] }, {"name":"getBuildConfiguration","parameterTypes":[] }, {"name":"getBuildProgress","parameterTypes":[] }, {"name":"getBuildReport","parameterTypes":[] }, {"name":"getCanonicalizeFlags","parameterTypes":[] }, {"name":"getCategoryCase","parameterTypes":[] }, {"name":"getCleanCommand","parameterTypes":[] }, {"name":"getClientEnvironment","parameterTypes":[] }, {"name":"getCommand","parameterTypes":[] }, {"name":"getConfigCommand","parameterTypes":[] }, {"name":"getConfigurableQuery","parameterTypes":[] }, {"name":"getCppCompile","parameterTypes":[] }, {"name":"getCppLink","parameterTypes":[] }, {"name":"getCrash","parameterTypes":[] }, {"name":"getCrashOptions","parameterTypes":[] }, {"name":"getDiffAwareness","parameterTypes":[] }, {"name":"getDumpCommand","parameterTypes":[] }, {"name":"getDynamicExecution","parameterTypes":[] }, {"name":"getExecution","parameterTypes":[] }, {"name":"getExecutionOptions","parameterTypes":[] }, {"name":"getExternalDeps","parameterTypes":[] }, {"name":"getExternalRepository","parameterTypes":[] }, {"name":"getFailAction","parameterTypes":[] }, {"name":"getFetchCommand","parameterTypes":[] }, {"name":"getFilesystem","parameterTypes":[] }, {"name":"getGrpcServer","parameterTypes":[] }, {"name":"getHelpCommand","parameterTypes":[] }, {"name":"getIncludeScanning","parameterTypes":[] }, {"name":"getInfoCommand","parameterTypes":[] }, {"name":"getInterrupted","parameterTypes":[] }, {"name":"getJavaCompile","parameterTypes":[] }, {"name":"getLocalExecution","parameterTypes":[] }, {"name":"getLtoAction","parameterTypes":[] }, {"name":"getMemoryOptions","parameterTypes":[] }, {"name":"getMessage","parameterTypes":[] }, {"name":"getMessageBytes","parameterTypes":[] }, {"name":"getMobileInstall","parameterTypes":[] }, {"name":"getModCommand","parameterTypes":[] }, {"name":"getNinjaAction","parameterTypes":[] }, {"name":"getPackageLoading","parameterTypes":[] }, {"name":"getPackageOptions","parameterTypes":[] }, {"name":"getPrintActionCommand","parameterTypes":[] }, {"name":"getProfileCommand","parameterTypes":[] }, {"name":"getQuery","parameterTypes":[] }, {"name":"getRemoteAnalysisCaching","parameterTypes":[] }, {"name":"getRemoteExecution","parameterTypes":[] }, {"name":"getRemoteOptions","parameterTypes":[] }, {"name":"getRunCommand","parameterTypes":[] }, {"name":"getSandbox","parameterTypes":[] }, {"name":"getSkyfocus","parameterTypes":[] }, {"name":"getSpawn","parameterTypes":[] }, {"name":"getStarlarkAction","parameterTypes":[] }, {"name":"getStarlarkLoading","parameterTypes":[] }, {"name":"getSymlinkAction","parameterTypes":[] }, {"name":"getSymlinkForest","parameterTypes":[] }, {"name":"getSyncCommand","parameterTypes":[] }, {"name":"getTargetPatterns","parameterTypes":[] }, {"name":"getTestAction","parameterTypes":[] }, {"name":"getTestCommand","parameterTypes":[] }, {"name":"getToolchain","parameterTypes":[] }, {"name":"getVersionCommand","parameterTypes":[] }, {"name":"getWorker","parameterTypes":[] }, {"name":"getWorkspaceStatus","parameterTypes":[] }, {"name":"getWorkspaces","parameterTypes":[] }, {"name":"hasActionCache","parameterTypes":[] }, {"name":"hasActionQuery","parameterTypes":[] }, {"name":"hasActionRewinding","parameterTypes":[] }, {"name":"hasAnalysis","parameterTypes":[] }, {"name":"hasBuildConfiguration","parameterTypes":[] }, {"name":"hasBuildProgress","parameterTypes":[] }, {"name":"hasBuildReport","parameterTypes":[] }, {"name":"hasCanonicalizeFlags","parameterTypes":[] }, {"name":"hasCleanCommand","parameterTypes":[] }, {"name":"hasClientEnvironment","parameterTypes":[] }, {"name":"hasCommand","parameterTypes":[] }, {"name":"hasConfigCommand","parameterTypes":[] }, {"name":"hasConfigurableQuery","parameterTypes":[] }, {"name":"hasCppCompile","parameterTypes":[] }, {"name":"hasCppLink","parameterTypes":[] }, {"name":"hasCrash","parameterTypes":[] }, {"name":"hasCrashOptions","parameterTypes":[] }, {"name":"hasDiffAwareness","parameterTypes":[] }, {"name":"hasDumpCommand","parameterTypes":[] }, {"name":"hasDynamicExecution","parameterTypes":[] }, {"name":"hasExecution","parameterTypes":[] }, {"name":"hasExecutionOptions","parameterTypes":[] }, {"name":"hasExternalDeps","parameterTypes":[] }, {"name":"hasExternalRepository","parameterTypes":[] }, {"name":"hasFailAction","parameterTypes":[] }, {"name":"hasFetchCommand","parameterTypes":[] }, {"name":"hasFilesystem","parameterTypes":[] }, {"name":"hasGrpcServer","parameterTypes":[] }, {"name":"hasHelpCommand","parameterTypes":[] }, {"name":"hasIncludeScanning","parameterTypes":[] }, {"name":"hasInfoCommand","parameterTypes":[] }, {"name":"hasInterrupted","parameterTypes":[] }, {"name":"hasJavaCompile","parameterTypes":[] }, {"name":"hasLocalExecution","parameterTypes":[] }, {"name":"hasLtoAction","parameterTypes":[] }, {"name":"hasMemoryOptions","parameterTypes":[] }, {"name":"hasMobileInstall","parameterTypes":[] }, {"name":"hasModCommand","parameterTypes":[] }, {"name":"hasNinjaAction","parameterTypes":[] }, {"name":"hasPackageLoading","parameterTypes":[] }, {"name":"hasPackageOptions","parameterTypes":[] }, {"name":"hasPrintActionCommand","parameterTypes":[] }, {"name":"hasProfileCommand","parameterTypes":[] }, {"name":"hasQuery","parameterTypes":[] }, {"name":"hasRemoteAnalysisCaching","parameterTypes":[] }, {"name":"hasRemoteExecution","parameterTypes":[] }, {"name":"hasRemoteOptions","parameterTypes":[] }, {"name":"hasRunCommand","parameterTypes":[] }, {"name":"hasSandbox","parameterTypes":[] }, {"name":"hasSkyfocus","parameterTypes":[] }, {"name":"hasSpawn","parameterTypes":[] }, {"name":"hasStarlarkAction","parameterTypes":[] }, {"name":"hasStarlarkLoading","parameterTypes":[] }, {"name":"hasSymlinkAction","parameterTypes":[] }, {"name":"hasSymlinkForest","parameterTypes":[] }, {"name":"hasSyncCommand","parameterTypes":[] }, {"name":"hasTargetPatterns","parameterTypes":[] }, {"name":"hasTestAction","parameterTypes":[] }, {"name":"hasTestCommand","parameterTypes":[] }, {"name":"hasToolchain","parameterTypes":[] }, {"name":"hasVersionCommand","parameterTypes":[] }, {"name":"hasWorker","parameterTypes":[] }, {"name":"hasWorkspaceStatus","parameterTypes":[] }, {"name":"hasWorkspaces","parameterTypes":[] }]
+  "methods":[{"name":"getActionCache","parameterTypes":[] }, {"name":"getActionQuery","parameterTypes":[] }, {"name":"getActionRewinding","parameterTypes":[] }, {"name":"getAnalysis","parameterTypes":[] }, {"name":"getBuildConfiguration","parameterTypes":[] }, {"name":"getBuildProgress","parameterTypes":[] }, {"name":"getBuildReport","parameterTypes":[] }, {"name":"getCanonicalizeFlags","parameterTypes":[] }, {"name":"getCategoryCase","parameterTypes":[] }, {"name":"getCleanCommand","parameterTypes":[] }, {"name":"getClientEnvironment","parameterTypes":[] }, {"name":"getCommand","parameterTypes":[] }, {"name":"getConfigCommand","parameterTypes":[] }, {"name":"getConfigurableQuery","parameterTypes":[] }, {"name":"getCppCompile","parameterTypes":[] }, {"name":"getCppLink","parameterTypes":[] }, {"name":"getCrash","parameterTypes":[] }, {"name":"getCrashOptions","parameterTypes":[] }, {"name":"getDiffAwareness","parameterTypes":[] }, {"name":"getDumpCommand","parameterTypes":[] }, {"name":"getDynamicExecution","parameterTypes":[] }, {"name":"getExecution","parameterTypes":[] }, {"name":"getExecutionOptions","parameterTypes":[] }, {"name":"getExternalDeps","parameterTypes":[] }, {"name":"getExternalRepository","parameterTypes":[] }, {"name":"getFailAction","parameterTypes":[] }, {"name":"getFetchCommand","parameterTypes":[] }, {"name":"getFilesystem","parameterTypes":[] }, {"name":"getGrpcServer","parameterTypes":[] }, {"name":"getHelpCommand","parameterTypes":[] }, {"name":"getIncludeScanning","parameterTypes":[] }, {"name":"getInfoCommand","parameterTypes":[] }, {"name":"getInterrupted","parameterTypes":[] }, {"name":"getJavaCompile","parameterTypes":[] }, {"name":"getLocalExecution","parameterTypes":[] }, {"name":"getLtoAction","parameterTypes":[] }, {"name":"getMemoryOptions","parameterTypes":[] }, {"name":"getMessage","parameterTypes":[] }, {"name":"getMessageBytes","parameterTypes":[] }, {"name":"getMobileInstall","parameterTypes":[] }, {"name":"getModCommand","parameterTypes":[] }, {"name":"getNinjaAction","parameterTypes":[] }, {"name":"getPackageLoading","parameterTypes":[] }, {"name":"getPackageOptions","parameterTypes":[] }, {"name":"getPrintActionCommand","parameterTypes":[] }, {"name":"getProfileCommand","parameterTypes":[] }, {"name":"getQuery","parameterTypes":[] }, {"name":"getRemoteAnalysisCaching","parameterTypes":[] }, {"name":"getRemoteExecution","parameterTypes":[] }, {"name":"getRemoteOptions","parameterTypes":[] }, {"name":"getRunCommand","parameterTypes":[] }, {"name":"getSandbox","parameterTypes":[] }, {"name":"getSkyfocus","parameterTypes":[] }, {"name":"getSpawn","parameterTypes":[] }, {"name":"getStarlarkAction","parameterTypes":[] }, {"name":"getStarlarkLoading","parameterTypes":[] }, {"name":"getSymlinkAction","parameterTypes":[] }, {"name":"getSymlinkForest","parameterTypes":[] }, {"name":"getSyncCommand","parameterTypes":[] }, {"name":"getTargetPatterns","parameterTypes":[] }, {"name":"getTestAction","parameterTypes":[] }, {"name":"getTestCommand","parameterTypes":[] }, {"name":"getToolchain","parameterTypes":[] }, {"name":"getVersionCommand","parameterTypes":[] }, {"name":"getWorker","parameterTypes":[] }, {"name":"getWorkspaceStatus","parameterTypes":[] }, {"name":"getWorkspaces","parameterTypes":[] }, {"name":"hasActionCache","parameterTypes":[] }, {"name":"hasActionQuery","parameterTypes":[] }, {"name":"hasActionRewinding","parameterTypes":[] }, {"name":"hasAnalysis","parameterTypes":[] }, {"name":"hasBuildConfiguration","parameterTypes":[] }, {"name":"hasBuildProgress","parameterTypes":[] }, {"name":"hasBuildReport","parameterTypes":[] }, {"name":"hasCanonicalizeFlags","parameterTypes":[] }, {"name":"hasCleanCommand","parameterTypes":[] }, {"name":"hasClientEnvironment","parameterTypes":[] }, {"name":"hasCommand","parameterTypes":[] }, {"name":"hasConfigCommand","parameterTypes":[] }, {"name":"hasConfigurableQuery","parameterTypes":[] }, {"name":"hasCppCompile","parameterTypes":[] }, {"name":"hasCppLink","parameterTypes":[] }, {"name":"hasCrash","parameterTypes":[] }, {"name":"hasCrashOptions","parameterTypes":[] }, {"name":"hasDiffAwareness","parameterTypes":[] }, {"name":"hasDumpCommand","parameterTypes":[] }, {"name":"hasDynamicExecution","parameterTypes":[] }, {"name":"hasExecution","parameterTypes":[] }, {"name":"hasExecutionOptions","parameterTypes":[] }, {"name":"hasExternalDeps","parameterTypes":[] }, {"name":"hasExternalRepository","parameterTypes":[] }, {"name":"hasFailAction","parameterTypes":[] }, {"name":"hasFetchCommand","parameterTypes":[] }, {"name":"hasFilesystem","parameterTypes":[] }, {"name":"hasGrpcServer","parameterTypes":[] }, {"name":"hasHelpCommand","parameterTypes":[] }, {"name":"hasIncludeScanning","parameterTypes":[] }, {"name":"hasInfoCommand","parameterTypes":[] }, {"name":"hasInterrupted","parameterTypes":[] }, {"name":"hasJavaCompile","parameterTypes":[] }, {"name":"hasLocalExecution","parameterTypes":[] }, {"name":"hasLtoAction","parameterTypes":[] }, {"name":"hasMemoryOptions","parameterTypes":[] }, {"name":"hasMessage","parameterTypes":[] }, {"name":"hasMobileInstall","parameterTypes":[] }, {"name":"hasModCommand","parameterTypes":[] }, {"name":"hasNinjaAction","parameterTypes":[] }, {"name":"hasPackageLoading","parameterTypes":[] }, {"name":"hasPackageOptions","parameterTypes":[] }, {"name":"hasPrintActionCommand","parameterTypes":[] }, {"name":"hasProfileCommand","parameterTypes":[] }, {"name":"hasQuery","parameterTypes":[] }, {"name":"hasRemoteAnalysisCaching","parameterTypes":[] }, {"name":"hasRemoteExecution","parameterTypes":[] }, {"name":"hasRemoteOptions","parameterTypes":[] }, {"name":"hasRunCommand","parameterTypes":[] }, {"name":"hasSandbox","parameterTypes":[] }, {"name":"hasSkyfocus","parameterTypes":[] }, {"name":"hasSpawn","parameterTypes":[] }, {"name":"hasStarlarkAction","parameterTypes":[] }, {"name":"hasStarlarkLoading","parameterTypes":[] }, {"name":"hasSymlinkAction","parameterTypes":[] }, {"name":"hasSymlinkForest","parameterTypes":[] }, {"name":"hasSyncCommand","parameterTypes":[] }, {"name":"hasTargetPatterns","parameterTypes":[] }, {"name":"hasTestAction","parameterTypes":[] }, {"name":"hasTestCommand","parameterTypes":[] }, {"name":"hasToolchain","parameterTypes":[] }, {"name":"hasVersionCommand","parameterTypes":[] }, {"name":"hasWorker","parameterTypes":[] }, {"name":"hasWorkspaceStatus","parameterTypes":[] }, {"name":"hasWorkspaces","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$FailureDetail$Builder",
-  "methods":[{"name":"clearActionCache","parameterTypes":[] }, {"name":"clearActionQuery","parameterTypes":[] }, {"name":"clearActionRewinding","parameterTypes":[] }, {"name":"clearAnalysis","parameterTypes":[] }, {"name":"clearBuildConfiguration","parameterTypes":[] }, {"name":"clearBuildProgress","parameterTypes":[] }, {"name":"clearBuildReport","parameterTypes":[] }, {"name":"clearCanonicalizeFlags","parameterTypes":[] }, {"name":"clearCategory","parameterTypes":[] }, {"name":"clearCleanCommand","parameterTypes":[] }, {"name":"clearClientEnvironment","parameterTypes":[] }, {"name":"clearCommand","parameterTypes":[] }, {"name":"clearConfigCommand","parameterTypes":[] }, {"name":"clearConfigurableQuery","parameterTypes":[] }, {"name":"clearCppCompile","parameterTypes":[] }, {"name":"clearCppLink","parameterTypes":[] }, {"name":"clearCrash","parameterTypes":[] }, {"name":"clearCrashOptions","parameterTypes":[] }, {"name":"clearDiffAwareness","parameterTypes":[] }, {"name":"clearDumpCommand","parameterTypes":[] }, {"name":"clearDynamicExecution","parameterTypes":[] }, {"name":"clearExecution","parameterTypes":[] }, {"name":"clearExecutionOptions","parameterTypes":[] }, {"name":"clearExternalDeps","parameterTypes":[] }, {"name":"clearExternalRepository","parameterTypes":[] }, {"name":"clearFailAction","parameterTypes":[] }, {"name":"clearFetchCommand","parameterTypes":[] }, {"name":"clearFilesystem","parameterTypes":[] }, {"name":"clearGrpcServer","parameterTypes":[] }, {"name":"clearHelpCommand","parameterTypes":[] }, {"name":"clearIncludeScanning","parameterTypes":[] }, {"name":"clearInfoCommand","parameterTypes":[] }, {"name":"clearInterrupted","parameterTypes":[] }, {"name":"clearJavaCompile","parameterTypes":[] }, {"name":"clearLocalExecution","parameterTypes":[] }, {"name":"clearLtoAction","parameterTypes":[] }, {"name":"clearMemoryOptions","parameterTypes":[] }, {"name":"clearMessage","parameterTypes":[] }, {"name":"clearMobileInstall","parameterTypes":[] }, {"name":"clearModCommand","parameterTypes":[] }, {"name":"clearNinjaAction","parameterTypes":[] }, {"name":"clearPackageLoading","parameterTypes":[] }, {"name":"clearPackageOptions","parameterTypes":[] }, {"name":"clearPrintActionCommand","parameterTypes":[] }, {"name":"clearProfileCommand","parameterTypes":[] }, {"name":"clearQuery","parameterTypes":[] }, {"name":"clearRemoteAnalysisCaching","parameterTypes":[] }, {"name":"clearRemoteExecution","parameterTypes":[] }, {"name":"clearRemoteOptions","parameterTypes":[] }, {"name":"clearRunCommand","parameterTypes":[] }, {"name":"clearSandbox","parameterTypes":[] }, {"name":"clearSkyfocus","parameterTypes":[] }, {"name":"clearSpawn","parameterTypes":[] }, {"name":"clearStarlarkAction","parameterTypes":[] }, {"name":"clearStarlarkLoading","parameterTypes":[] }, {"name":"clearSymlinkAction","parameterTypes":[] }, {"name":"clearSymlinkForest","parameterTypes":[] }, {"name":"clearSyncCommand","parameterTypes":[] }, {"name":"clearTargetPatterns","parameterTypes":[] }, {"name":"clearTestAction","parameterTypes":[] }, {"name":"clearTestCommand","parameterTypes":[] }, {"name":"clearToolchain","parameterTypes":[] }, {"name":"clearVersionCommand","parameterTypes":[] }, {"name":"clearWorker","parameterTypes":[] }, {"name":"clearWorkspaceStatus","parameterTypes":[] }, {"name":"clearWorkspaces","parameterTypes":[] }, {"name":"getActionCache","parameterTypes":[] }, {"name":"getActionCacheBuilder","parameterTypes":[] }, {"name":"getActionQuery","parameterTypes":[] }, {"name":"getActionQueryBuilder","parameterTypes":[] }, {"name":"getActionRewinding","parameterTypes":[] }, {"name":"getActionRewindingBuilder","parameterTypes":[] }, {"name":"getAnalysis","parameterTypes":[] }, {"name":"getAnalysisBuilder","parameterTypes":[] }, {"name":"getBuildConfiguration","parameterTypes":[] }, {"name":"getBuildConfigurationBuilder","parameterTypes":[] }, {"name":"getBuildProgress","parameterTypes":[] }, {"name":"getBuildProgressBuilder","parameterTypes":[] }, {"name":"getBuildReport","parameterTypes":[] }, {"name":"getBuildReportBuilder","parameterTypes":[] }, {"name":"getCanonicalizeFlags","parameterTypes":[] }, {"name":"getCanonicalizeFlagsBuilder","parameterTypes":[] }, {"name":"getCategoryCase","parameterTypes":[] }, {"name":"getCleanCommand","parameterTypes":[] }, {"name":"getCleanCommandBuilder","parameterTypes":[] }, {"name":"getClientEnvironment","parameterTypes":[] }, {"name":"getClientEnvironmentBuilder","parameterTypes":[] }, {"name":"getCommand","parameterTypes":[] }, {"name":"getCommandBuilder","parameterTypes":[] }, {"name":"getConfigCommand","parameterTypes":[] }, {"name":"getConfigCommandBuilder","parameterTypes":[] }, {"name":"getConfigurableQuery","parameterTypes":[] }, {"name":"getConfigurableQueryBuilder","parameterTypes":[] }, {"name":"getCppCompile","parameterTypes":[] }, {"name":"getCppCompileBuilder","parameterTypes":[] }, {"name":"getCppLink","parameterTypes":[] }, {"name":"getCppLinkBuilder","parameterTypes":[] }, {"name":"getCrash","parameterTypes":[] }, {"name":"getCrashBuilder","parameterTypes":[] }, {"name":"getCrashOptions","parameterTypes":[] }, {"name":"getCrashOptionsBuilder","parameterTypes":[] }, {"name":"getDiffAwareness","parameterTypes":[] }, {"name":"getDiffAwarenessBuilder","parameterTypes":[] }, {"name":"getDumpCommand","parameterTypes":[] }, {"name":"getDumpCommandBuilder","parameterTypes":[] }, {"name":"getDynamicExecution","parameterTypes":[] }, {"name":"getDynamicExecutionBuilder","parameterTypes":[] }, {"name":"getExecution","parameterTypes":[] }, {"name":"getExecutionBuilder","parameterTypes":[] }, {"name":"getExecutionOptions","parameterTypes":[] }, {"name":"getExecutionOptionsBuilder","parameterTypes":[] }, {"name":"getExternalDeps","parameterTypes":[] }, {"name":"getExternalDepsBuilder","parameterTypes":[] }, {"name":"getExternalRepository","parameterTypes":[] }, {"name":"getExternalRepositoryBuilder","parameterTypes":[] }, {"name":"getFailAction","parameterTypes":[] }, {"name":"getFailActionBuilder","parameterTypes":[] }, {"name":"getFetchCommand","parameterTypes":[] }, {"name":"getFetchCommandBuilder","parameterTypes":[] }, {"name":"getFilesystem","parameterTypes":[] }, {"name":"getFilesystemBuilder","parameterTypes":[] }, {"name":"getGrpcServer","parameterTypes":[] }, {"name":"getGrpcServerBuilder","parameterTypes":[] }, {"name":"getHelpCommand","parameterTypes":[] }, {"name":"getHelpCommandBuilder","parameterTypes":[] }, {"name":"getIncludeScanning","parameterTypes":[] }, {"name":"getIncludeScanningBuilder","parameterTypes":[] }, {"name":"getInfoCommand","parameterTypes":[] }, {"name":"getInfoCommandBuilder","parameterTypes":[] }, {"name":"getInterrupted","parameterTypes":[] }, {"name":"getInterruptedBuilder","parameterTypes":[] }, {"name":"getJavaCompile","parameterTypes":[] }, {"name":"getJavaCompileBuilder","parameterTypes":[] }, {"name":"getLocalExecution","parameterTypes":[] }, {"name":"getLocalExecutionBuilder","parameterTypes":[] }, {"name":"getLtoAction","parameterTypes":[] }, {"name":"getLtoActionBuilder","parameterTypes":[] }, {"name":"getMemoryOptions","parameterTypes":[] }, {"name":"getMemoryOptionsBuilder","parameterTypes":[] }, {"name":"getMessage","parameterTypes":[] }, {"name":"getMobileInstall","parameterTypes":[] }, {"name":"getMobileInstallBuilder","parameterTypes":[] }, {"name":"getModCommand","parameterTypes":[] }, {"name":"getModCommandBuilder","parameterTypes":[] }, {"name":"getNinjaAction","parameterTypes":[] }, {"name":"getNinjaActionBuilder","parameterTypes":[] }, {"name":"getPackageLoading","parameterTypes":[] }, {"name":"getPackageLoadingBuilder","parameterTypes":[] }, {"name":"getPackageOptions","parameterTypes":[] }, {"name":"getPackageOptionsBuilder","parameterTypes":[] }, {"name":"getPrintActionCommand","parameterTypes":[] }, {"name":"getPrintActionCommandBuilder","parameterTypes":[] }, {"name":"getProfileCommand","parameterTypes":[] }, {"name":"getProfileCommandBuilder","parameterTypes":[] }, {"name":"getQuery","parameterTypes":[] }, {"name":"getQueryBuilder","parameterTypes":[] }, {"name":"getRemoteAnalysisCaching","parameterTypes":[] }, {"name":"getRemoteAnalysisCachingBuilder","parameterTypes":[] }, {"name":"getRemoteExecution","parameterTypes":[] }, {"name":"getRemoteExecutionBuilder","parameterTypes":[] }, {"name":"getRemoteOptions","parameterTypes":[] }, {"name":"getRemoteOptionsBuilder","parameterTypes":[] }, {"name":"getRunCommand","parameterTypes":[] }, {"name":"getRunCommandBuilder","parameterTypes":[] }, {"name":"getSandbox","parameterTypes":[] }, {"name":"getSandboxBuilder","parameterTypes":[] }, {"name":"getSkyfocus","parameterTypes":[] }, {"name":"getSkyfocusBuilder","parameterTypes":[] }, {"name":"getSpawn","parameterTypes":[] }, {"name":"getSpawnBuilder","parameterTypes":[] }, {"name":"getStarlarkAction","parameterTypes":[] }, {"name":"getStarlarkActionBuilder","parameterTypes":[] }, {"name":"getStarlarkLoading","parameterTypes":[] }, {"name":"getStarlarkLoadingBuilder","parameterTypes":[] }, {"name":"getSymlinkAction","parameterTypes":[] }, {"name":"getSymlinkActionBuilder","parameterTypes":[] }, {"name":"getSymlinkForest","parameterTypes":[] }, {"name":"getSymlinkForestBuilder","parameterTypes":[] }, {"name":"getSyncCommand","parameterTypes":[] }, {"name":"getSyncCommandBuilder","parameterTypes":[] }, {"name":"getTargetPatterns","parameterTypes":[] }, {"name":"getTargetPatternsBuilder","parameterTypes":[] }, {"name":"getTestAction","parameterTypes":[] }, {"name":"getTestActionBuilder","parameterTypes":[] }, {"name":"getTestCommand","parameterTypes":[] }, {"name":"getTestCommandBuilder","parameterTypes":[] }, {"name":"getToolchain","parameterTypes":[] }, {"name":"getToolchainBuilder","parameterTypes":[] }, {"name":"getVersionCommand","parameterTypes":[] }, {"name":"getVersionCommandBuilder","parameterTypes":[] }, {"name":"getWorker","parameterTypes":[] }, {"name":"getWorkerBuilder","parameterTypes":[] }, {"name":"getWorkspaceStatus","parameterTypes":[] }, {"name":"getWorkspaceStatusBuilder","parameterTypes":[] }, {"name":"getWorkspaces","parameterTypes":[] }, {"name":"getWorkspacesBuilder","parameterTypes":[] }, {"name":"hasActionCache","parameterTypes":[] }, {"name":"hasActionQuery","parameterTypes":[] }, {"name":"hasActionRewinding","parameterTypes":[] }, {"name":"hasAnalysis","parameterTypes":[] }, {"name":"hasBuildConfiguration","parameterTypes":[] }, {"name":"hasBuildProgress","parameterTypes":[] }, {"name":"hasBuildReport","parameterTypes":[] }, {"name":"hasCanonicalizeFlags","parameterTypes":[] }, {"name":"hasCleanCommand","parameterTypes":[] }, {"name":"hasClientEnvironment","parameterTypes":[] }, {"name":"hasCommand","parameterTypes":[] }, {"name":"hasConfigCommand","parameterTypes":[] }, {"name":"hasConfigurableQuery","parameterTypes":[] }, {"name":"hasCppCompile","parameterTypes":[] }, {"name":"hasCppLink","parameterTypes":[] }, {"name":"hasCrash","parameterTypes":[] }, {"name":"hasCrashOptions","parameterTypes":[] }, {"name":"hasDiffAwareness","parameterTypes":[] }, {"name":"hasDumpCommand","parameterTypes":[] }, {"name":"hasDynamicExecution","parameterTypes":[] }, {"name":"hasExecution","parameterTypes":[] }, {"name":"hasExecutionOptions","parameterTypes":[] }, {"name":"hasExternalDeps","parameterTypes":[] }, {"name":"hasExternalRepository","parameterTypes":[] }, {"name":"hasFailAction","parameterTypes":[] }, {"name":"hasFetchCommand","parameterTypes":[] }, {"name":"hasFilesystem","parameterTypes":[] }, {"name":"hasGrpcServer","parameterTypes":[] }, {"name":"hasHelpCommand","parameterTypes":[] }, {"name":"hasIncludeScanning","parameterTypes":[] }, {"name":"hasInfoCommand","parameterTypes":[] }, {"name":"hasInterrupted","parameterTypes":[] }, {"name":"hasJavaCompile","parameterTypes":[] }, {"name":"hasLocalExecution","parameterTypes":[] }, {"name":"hasLtoAction","parameterTypes":[] }, {"name":"hasMemoryOptions","parameterTypes":[] }, {"name":"hasMobileInstall","parameterTypes":[] }, {"name":"hasModCommand","parameterTypes":[] }, {"name":"hasNinjaAction","parameterTypes":[] }, {"name":"hasPackageLoading","parameterTypes":[] }, {"name":"hasPackageOptions","parameterTypes":[] }, {"name":"hasPrintActionCommand","parameterTypes":[] }, {"name":"hasProfileCommand","parameterTypes":[] }, {"name":"hasQuery","parameterTypes":[] }, {"name":"hasRemoteAnalysisCaching","parameterTypes":[] }, {"name":"hasRemoteExecution","parameterTypes":[] }, {"name":"hasRemoteOptions","parameterTypes":[] }, {"name":"hasRunCommand","parameterTypes":[] }, {"name":"hasSandbox","parameterTypes":[] }, {"name":"hasSkyfocus","parameterTypes":[] }, {"name":"hasSpawn","parameterTypes":[] }, {"name":"hasStarlarkAction","parameterTypes":[] }, {"name":"hasStarlarkLoading","parameterTypes":[] }, {"name":"hasSymlinkAction","parameterTypes":[] }, {"name":"hasSymlinkForest","parameterTypes":[] }, {"name":"hasSyncCommand","parameterTypes":[] }, {"name":"hasTargetPatterns","parameterTypes":[] }, {"name":"hasTestAction","parameterTypes":[] }, {"name":"hasTestCommand","parameterTypes":[] }, {"name":"hasToolchain","parameterTypes":[] }, {"name":"hasVersionCommand","parameterTypes":[] }, {"name":"hasWorker","parameterTypes":[] }, {"name":"hasWorkspaceStatus","parameterTypes":[] }, {"name":"hasWorkspaces","parameterTypes":[] }, {"name":"setActionCache","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionCache"] }, {"name":"setActionQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionQuery"] }, {"name":"setActionRewinding","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionRewinding"] }, {"name":"setAnalysis","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Analysis"] }, {"name":"setBuildConfiguration","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration"] }, {"name":"setBuildProgress","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildProgress"] }, {"name":"setBuildReport","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildReport"] }, {"name":"setCanonicalizeFlags","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags"] }, {"name":"setCleanCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CleanCommand"] }, {"name":"setClientEnvironment","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment"] }, {"name":"setCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Command"] }, {"name":"setConfigCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigCommand"] }, {"name":"setConfigurableQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery"] }, {"name":"setCppCompile","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppCompile"] }, {"name":"setCppLink","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppLink"] }, {"name":"setCrash","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Crash"] }, {"name":"setCrashOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CrashOptions"] }, {"name":"setDiffAwareness","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DiffAwareness"] }, {"name":"setDumpCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DumpCommand"] }, {"name":"setDynamicExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DynamicExecution"] }, {"name":"setExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Execution"] }, {"name":"setExecutionOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions"] }, {"name":"setExternalDeps","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalDeps"] }, {"name":"setExternalRepository","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalRepository"] }, {"name":"setFailAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FailAction"] }, {"name":"setFetchCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FetchCommand"] }, {"name":"setFilesystem","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Filesystem"] }, {"name":"setGrpcServer","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$GrpcServer"] }, {"name":"setHelpCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$HelpCommand"] }, {"name":"setIncludeScanning","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$IncludeScanning"] }, {"name":"setInfoCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$InfoCommand"] }, {"name":"setInterrupted","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Interrupted"] }, {"name":"setJavaCompile","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$JavaCompile"] }, {"name":"setLocalExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LocalExecution"] }, {"name":"setLtoAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LtoAction"] }, {"name":"setMemoryOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MemoryOptions"] }, {"name":"setMessage","parameterTypes":["java.lang.String"] }, {"name":"setMessageBytes","parameterTypes":["com.google.protobuf.ByteString"] }, {"name":"setMobileInstall","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MobileInstall"] }, {"name":"setModCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ModCommand"] }, {"name":"setNinjaAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$NinjaAction"] }, {"name":"setPackageLoading","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageLoading"] }, {"name":"setPackageOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageOptions"] }, {"name":"setPrintActionCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand"] }, {"name":"setProfileCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ProfileCommand"] }, {"name":"setQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Query"] }, {"name":"setRemoteAnalysisCaching","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching"] }, {"name":"setRemoteExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteExecution"] }, {"name":"setRemoteOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteOptions"] }, {"name":"setRunCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RunCommand"] }, {"name":"setSandbox","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Sandbox"] }, {"name":"setSkyfocus","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Skyfocus"] }, {"name":"setSpawn","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Spawn"] }, {"name":"setStarlarkAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkAction"] }, {"name":"setStarlarkLoading","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading"] }, {"name":"setSymlinkAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkAction"] }, {"name":"setSymlinkForest","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkForest"] }, {"name":"setSyncCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SyncCommand"] }, {"name":"setTargetPatterns","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TargetPatterns"] }, {"name":"setTestAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestAction"] }, {"name":"setTestCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestCommand"] }, {"name":"setToolchain","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Toolchain"] }, {"name":"setVersionCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$VersionCommand"] }, {"name":"setWorker","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Worker"] }, {"name":"setWorkspaceStatus","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus"] }, {"name":"setWorkspaces","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Workspaces"] }]
+  "methods":[{"name":"clearActionCache","parameterTypes":[] }, {"name":"clearActionQuery","parameterTypes":[] }, {"name":"clearActionRewinding","parameterTypes":[] }, {"name":"clearAnalysis","parameterTypes":[] }, {"name":"clearBuildConfiguration","parameterTypes":[] }, {"name":"clearBuildProgress","parameterTypes":[] }, {"name":"clearBuildReport","parameterTypes":[] }, {"name":"clearCanonicalizeFlags","parameterTypes":[] }, {"name":"clearCategory","parameterTypes":[] }, {"name":"clearCleanCommand","parameterTypes":[] }, {"name":"clearClientEnvironment","parameterTypes":[] }, {"name":"clearCommand","parameterTypes":[] }, {"name":"clearConfigCommand","parameterTypes":[] }, {"name":"clearConfigurableQuery","parameterTypes":[] }, {"name":"clearCppCompile","parameterTypes":[] }, {"name":"clearCppLink","parameterTypes":[] }, {"name":"clearCrash","parameterTypes":[] }, {"name":"clearCrashOptions","parameterTypes":[] }, {"name":"clearDiffAwareness","parameterTypes":[] }, {"name":"clearDumpCommand","parameterTypes":[] }, {"name":"clearDynamicExecution","parameterTypes":[] }, {"name":"clearExecution","parameterTypes":[] }, {"name":"clearExecutionOptions","parameterTypes":[] }, {"name":"clearExternalDeps","parameterTypes":[] }, {"name":"clearExternalRepository","parameterTypes":[] }, {"name":"clearFailAction","parameterTypes":[] }, {"name":"clearFetchCommand","parameterTypes":[] }, {"name":"clearFilesystem","parameterTypes":[] }, {"name":"clearGrpcServer","parameterTypes":[] }, {"name":"clearHelpCommand","parameterTypes":[] }, {"name":"clearIncludeScanning","parameterTypes":[] }, {"name":"clearInfoCommand","parameterTypes":[] }, {"name":"clearInterrupted","parameterTypes":[] }, {"name":"clearJavaCompile","parameterTypes":[] }, {"name":"clearLocalExecution","parameterTypes":[] }, {"name":"clearLtoAction","parameterTypes":[] }, {"name":"clearMemoryOptions","parameterTypes":[] }, {"name":"clearMessage","parameterTypes":[] }, {"name":"clearMobileInstall","parameterTypes":[] }, {"name":"clearModCommand","parameterTypes":[] }, {"name":"clearNinjaAction","parameterTypes":[] }, {"name":"clearPackageLoading","parameterTypes":[] }, {"name":"clearPackageOptions","parameterTypes":[] }, {"name":"clearPrintActionCommand","parameterTypes":[] }, {"name":"clearProfileCommand","parameterTypes":[] }, {"name":"clearQuery","parameterTypes":[] }, {"name":"clearRemoteAnalysisCaching","parameterTypes":[] }, {"name":"clearRemoteExecution","parameterTypes":[] }, {"name":"clearRemoteOptions","parameterTypes":[] }, {"name":"clearRunCommand","parameterTypes":[] }, {"name":"clearSandbox","parameterTypes":[] }, {"name":"clearSkyfocus","parameterTypes":[] }, {"name":"clearSpawn","parameterTypes":[] }, {"name":"clearStarlarkAction","parameterTypes":[] }, {"name":"clearStarlarkLoading","parameterTypes":[] }, {"name":"clearSymlinkAction","parameterTypes":[] }, {"name":"clearSymlinkForest","parameterTypes":[] }, {"name":"clearSyncCommand","parameterTypes":[] }, {"name":"clearTargetPatterns","parameterTypes":[] }, {"name":"clearTestAction","parameterTypes":[] }, {"name":"clearTestCommand","parameterTypes":[] }, {"name":"clearToolchain","parameterTypes":[] }, {"name":"clearVersionCommand","parameterTypes":[] }, {"name":"clearWorker","parameterTypes":[] }, {"name":"clearWorkspaceStatus","parameterTypes":[] }, {"name":"clearWorkspaces","parameterTypes":[] }, {"name":"getActionCache","parameterTypes":[] }, {"name":"getActionCacheBuilder","parameterTypes":[] }, {"name":"getActionQuery","parameterTypes":[] }, {"name":"getActionQueryBuilder","parameterTypes":[] }, {"name":"getActionRewinding","parameterTypes":[] }, {"name":"getActionRewindingBuilder","parameterTypes":[] }, {"name":"getAnalysis","parameterTypes":[] }, {"name":"getAnalysisBuilder","parameterTypes":[] }, {"name":"getBuildConfiguration","parameterTypes":[] }, {"name":"getBuildConfigurationBuilder","parameterTypes":[] }, {"name":"getBuildProgress","parameterTypes":[] }, {"name":"getBuildProgressBuilder","parameterTypes":[] }, {"name":"getBuildReport","parameterTypes":[] }, {"name":"getBuildReportBuilder","parameterTypes":[] }, {"name":"getCanonicalizeFlags","parameterTypes":[] }, {"name":"getCanonicalizeFlagsBuilder","parameterTypes":[] }, {"name":"getCategoryCase","parameterTypes":[] }, {"name":"getCleanCommand","parameterTypes":[] }, {"name":"getCleanCommandBuilder","parameterTypes":[] }, {"name":"getClientEnvironment","parameterTypes":[] }, {"name":"getClientEnvironmentBuilder","parameterTypes":[] }, {"name":"getCommand","parameterTypes":[] }, {"name":"getCommandBuilder","parameterTypes":[] }, {"name":"getConfigCommand","parameterTypes":[] }, {"name":"getConfigCommandBuilder","parameterTypes":[] }, {"name":"getConfigurableQuery","parameterTypes":[] }, {"name":"getConfigurableQueryBuilder","parameterTypes":[] }, {"name":"getCppCompile","parameterTypes":[] }, {"name":"getCppCompileBuilder","parameterTypes":[] }, {"name":"getCppLink","parameterTypes":[] }, {"name":"getCppLinkBuilder","parameterTypes":[] }, {"name":"getCrash","parameterTypes":[] }, {"name":"getCrashBuilder","parameterTypes":[] }, {"name":"getCrashOptions","parameterTypes":[] }, {"name":"getCrashOptionsBuilder","parameterTypes":[] }, {"name":"getDiffAwareness","parameterTypes":[] }, {"name":"getDiffAwarenessBuilder","parameterTypes":[] }, {"name":"getDumpCommand","parameterTypes":[] }, {"name":"getDumpCommandBuilder","parameterTypes":[] }, {"name":"getDynamicExecution","parameterTypes":[] }, {"name":"getDynamicExecutionBuilder","parameterTypes":[] }, {"name":"getExecution","parameterTypes":[] }, {"name":"getExecutionBuilder","parameterTypes":[] }, {"name":"getExecutionOptions","parameterTypes":[] }, {"name":"getExecutionOptionsBuilder","parameterTypes":[] }, {"name":"getExternalDeps","parameterTypes":[] }, {"name":"getExternalDepsBuilder","parameterTypes":[] }, {"name":"getExternalRepository","parameterTypes":[] }, {"name":"getExternalRepositoryBuilder","parameterTypes":[] }, {"name":"getFailAction","parameterTypes":[] }, {"name":"getFailActionBuilder","parameterTypes":[] }, {"name":"getFetchCommand","parameterTypes":[] }, {"name":"getFetchCommandBuilder","parameterTypes":[] }, {"name":"getFilesystem","parameterTypes":[] }, {"name":"getFilesystemBuilder","parameterTypes":[] }, {"name":"getGrpcServer","parameterTypes":[] }, {"name":"getGrpcServerBuilder","parameterTypes":[] }, {"name":"getHelpCommand","parameterTypes":[] }, {"name":"getHelpCommandBuilder","parameterTypes":[] }, {"name":"getIncludeScanning","parameterTypes":[] }, {"name":"getIncludeScanningBuilder","parameterTypes":[] }, {"name":"getInfoCommand","parameterTypes":[] }, {"name":"getInfoCommandBuilder","parameterTypes":[] }, {"name":"getInterrupted","parameterTypes":[] }, {"name":"getInterruptedBuilder","parameterTypes":[] }, {"name":"getJavaCompile","parameterTypes":[] }, {"name":"getJavaCompileBuilder","parameterTypes":[] }, {"name":"getLocalExecution","parameterTypes":[] }, {"name":"getLocalExecutionBuilder","parameterTypes":[] }, {"name":"getLtoAction","parameterTypes":[] }, {"name":"getLtoActionBuilder","parameterTypes":[] }, {"name":"getMemoryOptions","parameterTypes":[] }, {"name":"getMemoryOptionsBuilder","parameterTypes":[] }, {"name":"getMessage","parameterTypes":[] }, {"name":"getMessageBytes","parameterTypes":[] }, {"name":"getMobileInstall","parameterTypes":[] }, {"name":"getMobileInstallBuilder","parameterTypes":[] }, {"name":"getModCommand","parameterTypes":[] }, {"name":"getModCommandBuilder","parameterTypes":[] }, {"name":"getNinjaAction","parameterTypes":[] }, {"name":"getNinjaActionBuilder","parameterTypes":[] }, {"name":"getPackageLoading","parameterTypes":[] }, {"name":"getPackageLoadingBuilder","parameterTypes":[] }, {"name":"getPackageOptions","parameterTypes":[] }, {"name":"getPackageOptionsBuilder","parameterTypes":[] }, {"name":"getPrintActionCommand","parameterTypes":[] }, {"name":"getPrintActionCommandBuilder","parameterTypes":[] }, {"name":"getProfileCommand","parameterTypes":[] }, {"name":"getProfileCommandBuilder","parameterTypes":[] }, {"name":"getQuery","parameterTypes":[] }, {"name":"getQueryBuilder","parameterTypes":[] }, {"name":"getRemoteAnalysisCaching","parameterTypes":[] }, {"name":"getRemoteAnalysisCachingBuilder","parameterTypes":[] }, {"name":"getRemoteExecution","parameterTypes":[] }, {"name":"getRemoteExecutionBuilder","parameterTypes":[] }, {"name":"getRemoteOptions","parameterTypes":[] }, {"name":"getRemoteOptionsBuilder","parameterTypes":[] }, {"name":"getRunCommand","parameterTypes":[] }, {"name":"getRunCommandBuilder","parameterTypes":[] }, {"name":"getSandbox","parameterTypes":[] }, {"name":"getSandboxBuilder","parameterTypes":[] }, {"name":"getSkyfocus","parameterTypes":[] }, {"name":"getSkyfocusBuilder","parameterTypes":[] }, {"name":"getSpawn","parameterTypes":[] }, {"name":"getSpawnBuilder","parameterTypes":[] }, {"name":"getStarlarkAction","parameterTypes":[] }, {"name":"getStarlarkActionBuilder","parameterTypes":[] }, {"name":"getStarlarkLoading","parameterTypes":[] }, {"name":"getStarlarkLoadingBuilder","parameterTypes":[] }, {"name":"getSymlinkAction","parameterTypes":[] }, {"name":"getSymlinkActionBuilder","parameterTypes":[] }, {"name":"getSymlinkForest","parameterTypes":[] }, {"name":"getSymlinkForestBuilder","parameterTypes":[] }, {"name":"getSyncCommand","parameterTypes":[] }, {"name":"getSyncCommandBuilder","parameterTypes":[] }, {"name":"getTargetPatterns","parameterTypes":[] }, {"name":"getTargetPatternsBuilder","parameterTypes":[] }, {"name":"getTestAction","parameterTypes":[] }, {"name":"getTestActionBuilder","parameterTypes":[] }, {"name":"getTestCommand","parameterTypes":[] }, {"name":"getTestCommandBuilder","parameterTypes":[] }, {"name":"getToolchain","parameterTypes":[] }, {"name":"getToolchainBuilder","parameterTypes":[] }, {"name":"getVersionCommand","parameterTypes":[] }, {"name":"getVersionCommandBuilder","parameterTypes":[] }, {"name":"getWorker","parameterTypes":[] }, {"name":"getWorkerBuilder","parameterTypes":[] }, {"name":"getWorkspaceStatus","parameterTypes":[] }, {"name":"getWorkspaceStatusBuilder","parameterTypes":[] }, {"name":"getWorkspaces","parameterTypes":[] }, {"name":"getWorkspacesBuilder","parameterTypes":[] }, {"name":"hasActionCache","parameterTypes":[] }, {"name":"hasActionQuery","parameterTypes":[] }, {"name":"hasActionRewinding","parameterTypes":[] }, {"name":"hasAnalysis","parameterTypes":[] }, {"name":"hasBuildConfiguration","parameterTypes":[] }, {"name":"hasBuildProgress","parameterTypes":[] }, {"name":"hasBuildReport","parameterTypes":[] }, {"name":"hasCanonicalizeFlags","parameterTypes":[] }, {"name":"hasCleanCommand","parameterTypes":[] }, {"name":"hasClientEnvironment","parameterTypes":[] }, {"name":"hasCommand","parameterTypes":[] }, {"name":"hasConfigCommand","parameterTypes":[] }, {"name":"hasConfigurableQuery","parameterTypes":[] }, {"name":"hasCppCompile","parameterTypes":[] }, {"name":"hasCppLink","parameterTypes":[] }, {"name":"hasCrash","parameterTypes":[] }, {"name":"hasCrashOptions","parameterTypes":[] }, {"name":"hasDiffAwareness","parameterTypes":[] }, {"name":"hasDumpCommand","parameterTypes":[] }, {"name":"hasDynamicExecution","parameterTypes":[] }, {"name":"hasExecution","parameterTypes":[] }, {"name":"hasExecutionOptions","parameterTypes":[] }, {"name":"hasExternalDeps","parameterTypes":[] }, {"name":"hasExternalRepository","parameterTypes":[] }, {"name":"hasFailAction","parameterTypes":[] }, {"name":"hasFetchCommand","parameterTypes":[] }, {"name":"hasFilesystem","parameterTypes":[] }, {"name":"hasGrpcServer","parameterTypes":[] }, {"name":"hasHelpCommand","parameterTypes":[] }, {"name":"hasIncludeScanning","parameterTypes":[] }, {"name":"hasInfoCommand","parameterTypes":[] }, {"name":"hasInterrupted","parameterTypes":[] }, {"name":"hasJavaCompile","parameterTypes":[] }, {"name":"hasLocalExecution","parameterTypes":[] }, {"name":"hasLtoAction","parameterTypes":[] }, {"name":"hasMemoryOptions","parameterTypes":[] }, {"name":"hasMessage","parameterTypes":[] }, {"name":"hasMobileInstall","parameterTypes":[] }, {"name":"hasModCommand","parameterTypes":[] }, {"name":"hasNinjaAction","parameterTypes":[] }, {"name":"hasPackageLoading","parameterTypes":[] }, {"name":"hasPackageOptions","parameterTypes":[] }, {"name":"hasPrintActionCommand","parameterTypes":[] }, {"name":"hasProfileCommand","parameterTypes":[] }, {"name":"hasQuery","parameterTypes":[] }, {"name":"hasRemoteAnalysisCaching","parameterTypes":[] }, {"name":"hasRemoteExecution","parameterTypes":[] }, {"name":"hasRemoteOptions","parameterTypes":[] }, {"name":"hasRunCommand","parameterTypes":[] }, {"name":"hasSandbox","parameterTypes":[] }, {"name":"hasSkyfocus","parameterTypes":[] }, {"name":"hasSpawn","parameterTypes":[] }, {"name":"hasStarlarkAction","parameterTypes":[] }, {"name":"hasStarlarkLoading","parameterTypes":[] }, {"name":"hasSymlinkAction","parameterTypes":[] }, {"name":"hasSymlinkForest","parameterTypes":[] }, {"name":"hasSyncCommand","parameterTypes":[] }, {"name":"hasTargetPatterns","parameterTypes":[] }, {"name":"hasTestAction","parameterTypes":[] }, {"name":"hasTestCommand","parameterTypes":[] }, {"name":"hasToolchain","parameterTypes":[] }, {"name":"hasVersionCommand","parameterTypes":[] }, {"name":"hasWorker","parameterTypes":[] }, {"name":"hasWorkspaceStatus","parameterTypes":[] }, {"name":"hasWorkspaces","parameterTypes":[] }, {"name":"setActionCache","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionCache"] }, {"name":"setActionQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionQuery"] }, {"name":"setActionRewinding","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ActionRewinding"] }, {"name":"setAnalysis","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Analysis"] }, {"name":"setBuildConfiguration","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildConfiguration"] }, {"name":"setBuildProgress","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildProgress"] }, {"name":"setBuildReport","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$BuildReport"] }, {"name":"setCanonicalizeFlags","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CanonicalizeFlags"] }, {"name":"setCleanCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CleanCommand"] }, {"name":"setClientEnvironment","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ClientEnvironment"] }, {"name":"setCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Command"] }, {"name":"setConfigCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigCommand"] }, {"name":"setConfigurableQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ConfigurableQuery"] }, {"name":"setCppCompile","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppCompile"] }, {"name":"setCppLink","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CppLink"] }, {"name":"setCrash","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Crash"] }, {"name":"setCrashOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$CrashOptions"] }, {"name":"setDiffAwareness","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DiffAwareness"] }, {"name":"setDumpCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DumpCommand"] }, {"name":"setDynamicExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$DynamicExecution"] }, {"name":"setExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Execution"] }, {"name":"setExecutionOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExecutionOptions"] }, {"name":"setExternalDeps","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalDeps"] }, {"name":"setExternalRepository","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ExternalRepository"] }, {"name":"setFailAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FailAction"] }, {"name":"setFetchCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FetchCommand"] }, {"name":"setFilesystem","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Filesystem"] }, {"name":"setGrpcServer","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$GrpcServer"] }, {"name":"setHelpCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$HelpCommand"] }, {"name":"setIncludeScanning","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$IncludeScanning"] }, {"name":"setInfoCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$InfoCommand"] }, {"name":"setInterrupted","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Interrupted"] }, {"name":"setJavaCompile","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$JavaCompile"] }, {"name":"setLocalExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LocalExecution"] }, {"name":"setLtoAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LtoAction"] }, {"name":"setMemoryOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MemoryOptions"] }, {"name":"setMessage","parameterTypes":["java.lang.String"] }, {"name":"setMessageBytes","parameterTypes":["com.google.protobuf.ByteString"] }, {"name":"setMobileInstall","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MobileInstall"] }, {"name":"setModCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ModCommand"] }, {"name":"setNinjaAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$NinjaAction"] }, {"name":"setPackageLoading","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageLoading"] }, {"name":"setPackageOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageOptions"] }, {"name":"setPrintActionCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand"] }, {"name":"setProfileCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ProfileCommand"] }, {"name":"setQuery","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Query"] }, {"name":"setRemoteAnalysisCaching","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching"] }, {"name":"setRemoteExecution","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteExecution"] }, {"name":"setRemoteOptions","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteOptions"] }, {"name":"setRunCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RunCommand"] }, {"name":"setSandbox","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Sandbox"] }, {"name":"setSkyfocus","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Skyfocus"] }, {"name":"setSpawn","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Spawn"] }, {"name":"setStarlarkAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkAction"] }, {"name":"setStarlarkLoading","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading"] }, {"name":"setSymlinkAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkAction"] }, {"name":"setSymlinkForest","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkForest"] }, {"name":"setSyncCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SyncCommand"] }, {"name":"setTargetPatterns","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TargetPatterns"] }, {"name":"setTestAction","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestAction"] }, {"name":"setTestCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestCommand"] }, {"name":"setToolchain","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Toolchain"] }, {"name":"setVersionCommand","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$VersionCommand"] }, {"name":"setWorker","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Worker"] }, {"name":"setWorkspaceStatus","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus"] }, {"name":"setWorkspaces","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Workspaces"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$FailureDetailMetadata$Builder",
+  "methods":[{"name":"clearExitCode","parameterTypes":[] }, {"name":"getExitCode","parameterTypes":[] }, {"name":"hasExitCode","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$FetchCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$FetchCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$FetchCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$FetchCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Filesystem",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Filesystem$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Filesystem$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Filesystem$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$GrpcServer",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$GrpcServer$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$GrpcServer$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$GrpcServer$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$HelpCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$HelpCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$HelpCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$HelpCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$IncludeScanning",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$IncludeScanning$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$IncludeScanning$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$IncludeScanning$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$InfoCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$InfoCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$InfoCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$InfoCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Interrupted",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Interrupted$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Interrupted$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Interrupted$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$JavaCompile",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$JavaCompile$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$JavaCompile$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$JavaCompile$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$LocalExecution",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$LocalExecution$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LocalExecution$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$LocalExecution$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$LtoAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$LtoAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$LtoAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$LtoAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$MemoryOptions",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$MemoryOptions$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MemoryOptions$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$MemoryOptions$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$MobileInstall",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$MobileInstall$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$MobileInstall$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$MobileInstall$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ModCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ModCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ModCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ModCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$NinjaAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$NinjaAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$NinjaAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$NinjaAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$PackageLoading",
-  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$PackageLoading$Builder",
-  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageLoading$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageLoading$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$PackageLoading$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$PackageOptions",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$PackageOptions$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PackageOptions$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$PackageOptions$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$PrintActionCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$ProfileCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ProfileCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$ProfileCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$ProfileCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Query",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Query$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Query$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Query$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteAnalysisCaching$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteExecution",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteExecution$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteExecution$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteExecution$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteOptions",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteOptions$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RemoteOptions$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RemoteOptions$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$RunCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RunCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$RunCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$RunCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Sandbox",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Sandbox$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Sandbox$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Sandbox$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Skyfocus",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Skyfocus$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Skyfocus$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Skyfocus$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Spawn",
-  "methods":[{"name":"getCatastrophic","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getSpawnExitCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCatastrophic","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getSpawnExitCode","parameterTypes":[] }, {"name":"hasCatastrophic","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"hasSpawnExitCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Spawn$Builder",
-  "methods":[{"name":"clearCatastrophic","parameterTypes":[] }, {"name":"clearCode","parameterTypes":[] }, {"name":"clearSpawnExitCode","parameterTypes":[] }, {"name":"getCatastrophic","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getSpawnExitCode","parameterTypes":[] }, {"name":"setCatastrophic","parameterTypes":["boolean"] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Spawn$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }, {"name":"setSpawnExitCode","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCatastrophic","parameterTypes":[] }, {"name":"clearCode","parameterTypes":[] }, {"name":"clearSpawnExitCode","parameterTypes":[] }, {"name":"getCatastrophic","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"getSpawnExitCode","parameterTypes":[] }, {"name":"hasCatastrophic","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"hasSpawnExitCode","parameterTypes":[] }, {"name":"setCatastrophic","parameterTypes":["boolean"] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Spawn$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }, {"name":"setSpawnExitCode","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Spawn$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$StarlarkLoading$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkForest",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkForest$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SymlinkForest$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SymlinkForest$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$SyncCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SyncCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$SyncCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$SyncCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$TargetPatterns",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TargetPatterns$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TargetPatterns$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TargetPatterns$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$TestAction",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TestAction$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestAction$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TestAction$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$TestCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TestCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$TestCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$TestCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Throwable",
+  "methods":[{"name":"getMessage","parameterTypes":[] }, {"name":"getMessageBytes","parameterTypes":[] }, {"name":"getStackTrace","parameterTypes":["int"] }, {"name":"getStackTraceCount","parameterTypes":[] }, {"name":"getStackTraceList","parameterTypes":[] }, {"name":"getThrowableClass","parameterTypes":[] }, {"name":"getThrowableClassBytes","parameterTypes":[] }, {"name":"hasMessage","parameterTypes":[] }, {"name":"hasThrowableClass","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Throwable$Builder",
+  "methods":[{"name":"addAllStackTrace","parameterTypes":["java.lang.Iterable"] }, {"name":"addStackTrace","parameterTypes":["java.lang.String"] }, {"name":"clearMessage","parameterTypes":[] }, {"name":"clearStackTrace","parameterTypes":[] }, {"name":"clearThrowableClass","parameterTypes":[] }, {"name":"getMessage","parameterTypes":[] }, {"name":"getMessageBytes","parameterTypes":[] }, {"name":"getStackTrace","parameterTypes":["int"] }, {"name":"getStackTraceCount","parameterTypes":[] }, {"name":"getStackTraceList","parameterTypes":[] }, {"name":"getThrowableClass","parameterTypes":[] }, {"name":"getThrowableClassBytes","parameterTypes":[] }, {"name":"hasMessage","parameterTypes":[] }, {"name":"hasThrowableClass","parameterTypes":[] }, {"name":"setMessage","parameterTypes":["java.lang.String"] }, {"name":"setMessageBytes","parameterTypes":["com.google.protobuf.ByteString"] }, {"name":"setStackTrace","parameterTypes":["int","java.lang.String"] }, {"name":"setThrowableClass","parameterTypes":["java.lang.String"] }, {"name":"setThrowableClassBytes","parameterTypes":["com.google.protobuf.ByteString"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Toolchain",
-  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Toolchain$Builder",
-  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Toolchain$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Toolchain$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Toolchain$Code",
+  "allDeclaredMethods":true,
   "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$VersionCommand",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$VersionCommand$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$VersionCommand$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$VersionCommand$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Worker",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Worker$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Worker$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Worker$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$WorkspaceStatus$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.server.FailureDetails$Workspaces",
-  "methods":[{"name":"newBuilder","parameterTypes":[] }]
+  "methods":[{"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"newBuilder","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Workspaces$Builder",
+  "methods":[{"name":"clearCode","parameterTypes":[] }, {"name":"getCode","parameterTypes":[] }, {"name":"getCodeValue","parameterTypes":[] }, {"name":"hasCode","parameterTypes":[] }, {"name":"setCode","parameterTypes":["com.google.devtools.build.lib.server.FailureDetails$Workspaces$Code"] }, {"name":"setCodeValue","parameterTypes":["int"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.server.FailureDetails$Workspaces$Code",
+  "methods":[{"name":"getValueDescriptor","parameterTypes":[] }, {"name":"valueOf","parameterTypes":["com.google.protobuf.Descriptors$EnumValueDescriptor"] }]
 },
 {
   "name":"com.google.devtools.build.lib.skyframe.BuildResultListener",

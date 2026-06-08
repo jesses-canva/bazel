@@ -1,5 +1,5 @@
 load("@rules_graalvm//graalvm:defs.bzl", "native_image")
-load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+load("@rules_java//java:defs.bzl", "java_binary", "java_import", "java_library")
 
 package(
     default_applicable_licenses = ["//:license"],
@@ -235,11 +235,22 @@ native_image(
     ],
     static_zlib = "@zlib",
     deps = [
-        ":main",
-        "//src/main/java/com/google/devtools/build/lib/bazel/nativeimage",
-        "//src/main/java/com/google/devtools/build/lib/util:simple_log_handler",
-        "//src/main/java/com/google/devtools/build/lib/util:single_line_formatter",
+        ":native_build_deploy_jar",
     ],
+)
+
+# Use the deploy jar so that build-data.properties is populated
+java_import(
+    name = "native_build_deploy_jar",
+    jars = [
+        ":BazelServer_deploy.jar",
+        ":nativeimage_jar",
+    ],
+)
+
+filegroup(
+    name = "nativeimage_jar",
+    srcs = ["//src/main/java/com/google/devtools/build/lib/bazel/nativeimage"]
 )
 
 java_binary(
