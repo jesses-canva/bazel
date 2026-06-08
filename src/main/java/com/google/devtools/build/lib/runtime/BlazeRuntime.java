@@ -1609,12 +1609,7 @@ public final class BlazeRuntime implements BugReport.BlazeRuntimeInterface {
    */
   private static void setupUncaughtHandlerAtStartup(final String[] args) {
     Thread.setDefaultUncaughtExceptionHandler(
-        (thread, throwable) -> {
-          System.err.println("UNCAUGHT EXCEPTION in thread " + thread.getName() + ":");
-          throwable.printStackTrace(System.err);
-          System.err.flush();
-          BugReport.handleCrash(throwable, args);
-        });
+        (thread, throwable) -> BugReport.handleCrash(throwable, args));
   }
 
   @Override

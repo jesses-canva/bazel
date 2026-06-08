@@ -352,8 +352,6 @@ public final class BugReport {
       throw new SecurityException(
           "Intercepted call to Runtime.halt with status " + numericExitCode);
     } else {
-      System.err.flush();
-      System.out.flush();
       Runtime.getRuntime().halt(numericExitCode);
     }
   }
