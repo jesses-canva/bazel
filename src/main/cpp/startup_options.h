@@ -100,7 +100,8 @@ class StartupOptions {
   // descriptive string for any value other than blaze_exit_code::SUCCESS.
   blaze_exit_code::ExitCode AddJVMArguments(
       const blaze_util::Path &server_javabase, std::vector<std::string> *result,
-      const std::vector<std::string> &user_options, std::string *error) const;
+      const std::vector<std::string> &user_options, bool is_native_server,
+      std::string *error) const;
 
   // Checks whether "arg" is a valid nullary option (e.g. "--master_bazelrc" or
   // "--nomaster_bazelrc").

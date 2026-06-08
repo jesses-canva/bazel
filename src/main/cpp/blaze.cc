@@ -388,69 +388,74 @@ static vector<string> GetServerExeArgs(const blaze_util::Path &jvm_path,
     result.push_back("--add-opens=java.base/java.lang=ALL-UNNAMED");
 
     result.push_back("-Xverify:none");
+  }
 
-    vector<string> user_options = startup_options.host_jvm_args;
+  vector<string> user_options = startup_options.host_jvm_args;
 
-    // Add JVM arguments particular to building blaze64 and particular JVM
-    // versions.
-    string error;
-    blaze_exit_code::ExitCode jvm_args_exit_code =
-        startup_options.AddJVMArguments(startup_options.GetServerJavabase(),
-                                        &result, user_options, &error);
-    if (jvm_args_exit_code != blaze_exit_code::SUCCESS) {
-      BAZEL_DIE(jvm_args_exit_code) << error;
-    }
+  // Add JVM arguments particular to building blaze64 and particular JVM
+  // versions.
+  string error;
+  blaze_exit_code::ExitCode jvm_args_exit_code =
+      startup_options.AddJVMArguments(startup_options.GetServerJavabase(),
+                                      &result, user_options, is_native_server,
+                                      &error);
+  if (jvm_args_exit_code != blaze_exit_code::SUCCESS) {
+    BAZEL_DIE(jvm_args_exit_code) << error;
+  }
 
-    // We put all directories on java.library.path that contain .so/.dll files.
-    set<string> java_library_paths;
-    std::stringstream java_library_path;
-    java_library_path << "-Djava.library.path=";
+  // We put all directories on java.library.path that contain .so/.dll files.
+  set<string> java_library_paths;
+  std::stringstream java_library_path;
+  java_library_path << "-Djava.library.path=";
 
-    for (const auto &it : archive_contents) {
-      if (IsSharedLibrary(it)) {
-        string libpath(real_install_dir.GetRelative(blaze_util::Dirname(it))
-                           .AsJvmArgument());
-        // Only add the library path if it's not added yet.
-        if (java_library_paths.insert(libpath).second) {
-          if (java_library_paths.size() > 1) {
-            java_library_path << kListSeparator;
-          }
-          java_library_path << libpath;
+  for (const auto &it : archive_contents) {
+    if (IsSharedLibrary(it)) {
+      string libpath(real_install_dir.GetRelative(blaze_util::Dirname(it))
+                         .AsJvmArgument());
+      // Only add the library path if it's not added yet.
+      if (java_library_paths.insert(libpath).second) {
+        if (java_library_paths.size() > 1) {
+          java_library_path << kListSeparator;
         }
+        java_library_path << libpath;
       }
     }
-    result.push_back(java_library_path.str());
+  }
+  result.push_back(java_library_path.str());
 
-    // TODO: Investigate whether this still has any effect. File name encoding
-    // is governed by sun.jnu.encoding in JDKs with JEP 400, which can't be
-    // influenced by setting a property.
-    result.push_back("-Dfile.encoding=ISO-8859-1");
-    // Force into the root locale to ensure consistent behavior of string
-    // operations across machines (e.g. in the tr_TR locale, capital ASCII 'I'
-    // turns into a special Unicode 'i' when converted to lower case).
-    // https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html#ROOT
-    result.push_back("-Duser.country=");
-    result.push_back("-Duser.language=");
-    result.push_back("-Duser.variant=");
+  // TODO: Investigate whether this still has any effect. File name encoding
+  // is governed by sun.jnu.encoding in JDKs with JEP 400, which can't be
+  // influenced by setting a property.
+  result.push_back("-Dfile.encoding=ISO-8859-1");
+  // Force into the root locale to ensure consistent behavior of string
+  // operations across machines (e.g. in the tr_TR locale, capital ASCII 'I'
+  // turns into a special Unicode 'i' when converted to lower case).
+  // https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html#ROOT
+  result.push_back("-Duser.country=");
+  result.push_back("-Duser.language=");
+  result.push_back("-Duser.variant=");
 
-    // Allow more files to be watched per directory than the default limit of
-    // 500. The limit of 10,000 is arbitrary, but should be sufficient for most
-    // cases and can always be increased by the user if necessary.
-    // https://github.com/openjdk/jdk/blob/2faf8b8d582183275b1fdc92313a1c63c1753e80/src/java.base/share/classes/sun/nio/fs/AbstractWatchKey.java#L40
-    result.push_back("-Djdk.nio.file.WatchService.maxEventsPerPoll=10000");
+  // Allow more files to be watched per directory than the default limit of
+  // 500. The limit of 10,000 is arbitrary, but should be sufficient for most
+  // cases and can always be increased by the user if necessary.
+  // https://github.com/openjdk/jdk/blob/2faf8b8d582183275b1fdc92313a1c63c1753e80/src/java.base/share/classes/sun/nio/fs/AbstractWatchKey.java#L40
+  result.push_back("-Djdk.nio.file.WatchService.maxEventsPerPoll=10000");
 
-    // Disable warnings about unsafe memory access, which still occurs in
-    // protobuf.
-    // TODO: Drop this when protobuf uses VarHandle.
-    result.push_back("-Dsun.misc.unsafe.memory.access=allow");
+  // Disable warnings about unsafe memory access, which still occurs in
+  // protobuf.
+  // TODO: Drop this when protobuf uses VarHandle.
+  result.push_back("-Dsun.misc.unsafe.memory.access=allow");
 
 #if defined(_WIN32)
+  if (!is_native_server) {
     // See and use more than 64 CPUs on Windows.
     // https://bugs.openjdk.org/browse/JDK-6942632
     result.push_back("-XX:+IgnoreUnrecognizedVMOptions");
     result.push_back("-XX:+UseAllWindowsProcessorGroups");
+  }
 #endif
 
+  if (!is_native_server) {
     if (startup_options.host_jvm_debug) {
       BAZEL_LOG(USER)
           << "Running host JVM under debugger (listening on TCP port 5005).";

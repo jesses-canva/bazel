@@ -4254,5 +4254,17 @@
 {
   "name":"sun.security.x509.SubjectKeyIdentifierExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
+},
+{
+  "name":"com.google.devtools.build.lib.util.SimpleLogHandler",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.util.SimpleLogHandler$HandlerQuerier",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.google.devtools.build.lib.util.SingleLineFormatter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

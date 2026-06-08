@@ -603,24 +603,28 @@ void StartupOptions::AddJVMArgumentSuffix(
 
 blaze_exit_code::ExitCode StartupOptions::AddJVMArguments(
     const blaze_util::Path &server_javabase, std::vector<string> *result,
-    const vector<string> &user_options, string *error) const {
+    const vector<string> &user_options, bool is_native_server, string *error) const {
   AddJVMLoggingArguments(result);
 
-  // Disable the JVM's own unlimiting of file descriptors.  We do this
-  // ourselves in blaze.cc so we want our setting to propagate to the JVM.
-  //
-  // The reason to do this is that the JVM's unlimiting is suboptimal on
-  // macOS.  Under that platform, the JVM limits the open file descriptors
-  // to the OPEN_MAX constant... which is much lower than the per-process
-  // kernel allowed limit of kern.maxfilesperproc (which is what we set
-  // ourselves to).
-  result->push_back("-XX:-MaxFDLimit");
+  if (!is_native_server) {
+    // Disable the JVM's own unlimiting of file descriptors.  We do this
+    // ourselves in blaze.cc so we want our setting to propagate to the JVM.
+    //
+    // The reason to do this is that the JVM's unlimiting is suboptimal on
+    // macOS.  Under that platform, the JVM limits the open file descriptors
+    // to the OPEN_MAX constant... which is much lower than the per-process
+    // kernel allowed limit of kern.maxfilesperproc (which is what we set
+    // ourselves to).
+    result->push_back("-XX:-MaxFDLimit");
+  }
 
   result->push_back("-Djava.lang.Thread.allowVirtualThreads=true");
 
-  result->push_back(
+  if (!is_native_server) {
+    result->push_back(
       "-XX:OnOutOfMemoryError=touch " +
       GetOOMFilePath(blaze_util::Path(output_base)).AsJvmArgument());
+  } 
 
   return AddJVMMemoryArguments(server_javabase, result, user_options, error);
 }

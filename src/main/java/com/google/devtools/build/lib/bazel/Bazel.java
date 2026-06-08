@@ -23,6 +23,7 @@ import com.google.devtools.build.lib.runtime.BlazeService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.LogManager;
 
 /**
  * The main class.
@@ -105,7 +106,11 @@ public final class Bazel {
   @SuppressWarnings("UnnecessarilyFullyQualified") // Class names fully qualified for clarity.
   public static final ImmutableList<BlazeService> BAZEL_SERVICES = ImmutableList.of();
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
+    // Reload log config from runtime flags passed from the launcher, see
+    // https://www.graalvm.org/22.0/reference-manual/native-image/Logging/index.html
+    LogManager.getLogManager().readConfiguration();
+
     BlazeVersionInfo.setBuildInfo(tryGetBuildInfo());
     BlazeRuntime.main(BAZEL_MODULES, BAZEL_SERVICES, args);
   }
